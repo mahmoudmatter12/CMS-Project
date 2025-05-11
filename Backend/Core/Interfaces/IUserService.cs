@@ -18,6 +18,6 @@ namespace CollageManagementSystem.Services
         Task<string> GetRoleByUserId(Guid id);
         Task<string> GetUserNameById(Guid id);
 
-        Task<User> GetUserByClerkId(string clerkId);
+        Task<User?> GetUserByClerkId(string clerkId);
     }
 }
