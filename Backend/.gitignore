@@ -1,0 +1,43 @@
+# Build
+bin/
+obj/
+TestResults/
+*.dll
+*.exe
+*.app
+*.pdb
+*.cache
+*.db
+
+# VS Code
+.vscode/
+
+# Rider
+.idea/
+
+# Sublime Text
+*.sublime-*
+
+# EF Core (optional - only ignore if you regenerate frequently)
+# Migrations/
+
+# App settings (if secrets inside)
+appsettings.json
+appsettings.*.json
+
+# Config
+.config/
+
+# User secrets
+**/secrets.json
+
+# Others
+*.user
+*.sql
+*.lock.json
+*.todo
+*.ncrunch*
+*.vsp
+*.vspscc
+*.vssscc
+/CollageMangmentSystem/Controllers/AuthController.cs
