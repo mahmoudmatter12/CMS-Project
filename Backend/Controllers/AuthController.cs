@@ -22,7 +22,7 @@ namespace CollageManagementSystem.Controllers
         }
 
         [HttpPost("ClerkRegister")]
-        public async Task<IActionResult> ClerkRegister([FromBody] RegisterDto registerDto)
+        public async Task<IActionResult> ClerkRegister([FromBody] CreateUserDto registerDto)
         {
             if (registerDto == null)
             {

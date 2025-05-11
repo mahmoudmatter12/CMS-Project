@@ -144,9 +144,16 @@ namespace CollageManagementSystem.Services
             return user.FullName;
         }
 
-        public async Task<User> GetUserByClerkId(string clerkId)
+        public async Task<User?> GetUserByClerkId(string clerkId)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.ClerkId == clerkId) ?? throw new Exception($"User with clerk id {clerkId} not found.");
+            var user = await _context.Users
+                .Include(u => u.Department)
+                .FirstOrDefaultAsync(u => u.ClerkId == clerkId);
+            if (user == null)
+            {
+                return null;
+            }
+            return user;
         }
 
     }

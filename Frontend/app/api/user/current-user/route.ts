@@ -11,7 +11,7 @@ export async function GET() {
     });
 
     if (!response.ok) {
-      throw new Error("Network response was not ok");
+      console.error("Failed to fetch current user:", response.statusText);
     }
 
     const data = await response.json();

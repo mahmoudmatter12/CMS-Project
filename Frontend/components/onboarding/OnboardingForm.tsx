@@ -4,6 +4,7 @@ import { useUser } from '@clerk/nextjs'
 import { useState, useEffect } from 'react'
 import { toast } from "sonner"
 import Image from 'next/image'
+import { userLeve } from '@/types/types'
 
 interface Department {
   id: string
@@ -20,6 +21,7 @@ export default function OnboardingForm() {
     departmentId: '',
     studentCollageId: '',
     profilePicture: user?.imageUrl || '',
+    level: '', // Added level field
   })
 
   // Fetch departments on mount
@@ -52,30 +54,30 @@ export default function OnboardingForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!isSignedIn || !user) {
       toast.error('You must be signed in to complete onboarding')
       return
     }
-
+    const userObject = {
+      email: user.primaryEmailAddress?.emailAddress,
+      fullName: formData.fullName,
+      departmentId: formData.departmentId,
+      profilePicture: formData.profilePicture,
+      clerkId: user.id,
+      studentCollageId: formData.studentCollageId,
+      level: formData.level, // Include level in submission
+      IsBoarded: true,
+    }
     try {
+      console.log('Submitting form data:', userObject) // Debugging line
       const response = await fetch('http://localhost:5168/api/Auth/ClerkRegister', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          email: user.primaryEmailAddress?.emailAddress,
-          fullName: formData.fullName,
-          departmentId: formData.departmentId,
-          profilePicture: formData.profilePicture,
-          clerkId: user.id,
-          studentCollageId: formData.studentCollageId,
-          IsBoarded: true,
-        }),
+        body: JSON.stringify(userObject),
       })
-
-      console.log('Onboarding response:', response) // Debugging line
 
       if (!response.ok) {
         toast.error('Failed to complete onboarding' + response.statusText)
@@ -103,7 +105,7 @@ export default function OnboardingForm() {
   return (
     <div className="max-w-md mx-auto my-8 p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-6 text-center">Complete Your Profile</h2>
-      
+
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Profile Picture Preview */}
         <div className="flex justify-center">
@@ -127,7 +129,7 @@ export default function OnboardingForm() {
             type="text"
             id="fullName"
             value={formData.fullName}
-            onChange={(e) => setFormData({...formData, fullName: e.target.value})}
+            onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500"
             required
           />
@@ -141,9 +143,8 @@ export default function OnboardingForm() {
           <select
             id="department"
             value={formData.departmentId}
-            onChange={(e) => setFormData({...formData, departmentId: e.target.value})}
+            onChange={(e) => setFormData({ ...formData, departmentId: e.target.value })}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500"
-            required
           >
             <option value="">Select your department</option>
             {departments.map((dept) => (
@@ -163,10 +164,30 @@ export default function OnboardingForm() {
             type="text"
             id="studentCollageId"
             value={formData.studentCollageId}
-            onChange={(e) => setFormData({...formData, studentCollageId: e.target.value})}
+            onChange={(e) => setFormData({ ...formData, studentCollageId: e.target.value })}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500"
             required
           />
+        </div>
+
+        {/* dropDown to levels in userleve */}
+        <div>
+          <label htmlFor="level" className="block text-sm font-medium text-gray-700">
+            Level
+          </label>
+          <select
+            id="level"
+            value={formData.level}
+            onChange={(e) => setFormData({ ...formData, level: e.target.value })}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500"
+          >
+            <option value="">Select your level</option>
+            {Object.values(userLeve).map((level) => (
+              <option key={level} value={level}>
+                {level}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div>
@@ -181,4 +202,3 @@ export default function OnboardingForm() {
     </div>
   )
 }
-
