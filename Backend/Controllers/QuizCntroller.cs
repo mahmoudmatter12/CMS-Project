@@ -17,7 +17,6 @@ namespace CollageManagementSystem
         {
             _quizRepository = quizRepository;
         }
-        // Todo: Add authorization to all endpoints
         // todo: add pagination to all endpoints
 
         [HttpGet("{id}")]

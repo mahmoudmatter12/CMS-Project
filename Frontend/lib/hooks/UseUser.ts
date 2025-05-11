@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useState } from 'react';
 import { useUser as useClerkUser } from '@clerk/nextjs';
-import { User } from '@clerk/nextjs/server';
+import { User } from '@/types/types';
 
 
 export function useCurrentUser() {

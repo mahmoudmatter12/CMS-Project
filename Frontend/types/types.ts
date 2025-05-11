@@ -15,6 +15,6 @@ export interface User {
   Level: string;
 }
 
-export interface Course{
+// export interface Course{
   
-}
+// }
