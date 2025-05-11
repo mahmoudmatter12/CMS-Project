@@ -6,7 +6,23 @@ const nextConfig: NextConfig = {
     authInterrupts: true,
   },
   images: {
-    domains: ["clerk.dev", "img.clerk.com"], // Add the domains from which Clerk serves images
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "clerk.dev",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "img.clerk.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        pathname: "/**",
+      },
+    ],
   },
 };
 

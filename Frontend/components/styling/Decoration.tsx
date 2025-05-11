@@ -24,6 +24,20 @@ function Decoration() {
         shadow-[0_30px_50px_-10px_rgba(34,211,238,0.25)]
         -rotate-12 animate-float"
       />
+      {/* <BackgroundBeams className="absolute inset-0 z-0" />
+      
+      <div className="absolute inset-0 w-full h-full">
+        <SparklesCore
+          id="hero-sparkles"
+          background="transparent"
+          minSize={0.6}
+          maxSize={1.4}
+          particleDensity={50}
+          className="w-full h-full"
+          particleColor="#06B6D4"
+        />
+      </div> */}
+
     </div>
   );
 }

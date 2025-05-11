@@ -16,7 +16,6 @@ import {
   SignedIn,
   SignedOut,
   SignOutButton,
-  UserButton,
 } from '@clerk/nextjs'
 import { TbTableDashed } from "react-icons/tb";
 import Authbtns from "./home/components/authbtns"
@@ -50,8 +49,7 @@ const tapScale = {
 
 export function AccountMenu() {
   // const { isLoaded, user } = useUser();
-  const { user, isLoaded } = useCurrentUser();
-
+  const { user, isLoaded , clerkUser } = useCurrentUser();
 
   if (!isLoaded) {
     return (
@@ -138,15 +136,23 @@ export function AccountMenu() {
                 <DropdownMenuTrigger asChild>
                   <motion.div whileHover={hoverScale} whileTap={tapScale}>
                     <Button variant="ghost" className="flex items-center gap-2 px-2 hover:bg-gray-700/10 rounded-lg">
-                      <UserButton
-                        appearance={{
-                          elements: {
-                            userButtonAvatarBox: "w-9 h-9 border-2 border-indigo-100",
-                          }
-                        }}
-                      />
+                      {/* Profile picture with motion */}
+                        {user?.profilePicture ? (
+                        <motion.img
+                          src={user?.profilePicture}
+                          alt="Profile"
+                          className="w-8 h-8 rounded-full border-2 border-white shadow-sm object-cover"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        />
+                        ) : <motion.div
+                        whileHover={{ rotate: 12 }}
+                        className="p-2 rounded-lg bg-gradient-to-br from-sky-500 to-sky-900 text-white"
+                        >
+                        <FiUser className="text-xl" />
+                        </motion.div>}
                       <span className="hidden sm:inline text-white">
-                        {user?.fullname || "Account"}
+                        {user?.fullname ? user?.fullname : clerkUser?.fullName}
                       </span>
                       <motion.div animate={{ rotate: 0 }} whileHover={{ rotate: 180 }}>
                         <FiChevronDown className="text-white" />
@@ -170,10 +176,10 @@ export function AccountMenu() {
                       <DropdownMenuLabel className="font-normal p-4">
                         <div className="flex flex-col space-y-1">
                           <p className="text-sm font-medium leading-none text-gray-900 dark:text-white">
-                            {user?.fullname || "User"}
+                            {user?.fullname ? user?.fullname : clerkUser?.fullName }
                           </p>
                           <p className="text-xs leading-none text-gray-500">
-                            {user?.email || ""}
+                            {user?.email ? user?.email : clerkUser?.emailAddresses[0]?.emailAddress}
                           </p>
                         </div>
                       </DropdownMenuLabel>
@@ -191,7 +197,7 @@ export function AccountMenu() {
 
                         <DropdownMenuItem className="p-0 hover:bg-gray-50 dark:hover:bg-gray-700/50">
                           <motion.div variants={itemVariants}>
-                            <Link href="/user/dashboard" className="flex items-center w-full px-4 py-2">
+                            <Link href="/user/dashboard" className="flex items-center w-full px-4 py-2" >
                               <TbTableDashed className="mr-2 text-gray-700" size={16} />
                               User Dashboard
                             </Link>

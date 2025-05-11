@@ -15,7 +15,6 @@ export async function GET() {
     }
 
     const data = await response.json();
-    console.log("Fetched current user:", data); // Log the fetched data
     return new Response(JSON.stringify(data), { status: 200 });
   } catch (error) {
     console.error("Error fetching current user:", error);
