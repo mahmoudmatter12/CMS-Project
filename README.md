@@ -88,3 +88,7 @@ dotnet run
 * 📝 Assignment and grading support
 * 🛡️ Authentication & Authorization (Planned/Implemented as needed)
 
+---
+
+## Contact
+For inquiries, please reach out to the development team.
