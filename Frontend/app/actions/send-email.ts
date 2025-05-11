@@ -66,4 +66,3 @@ Message: ${message}
         }
     }
 }
-

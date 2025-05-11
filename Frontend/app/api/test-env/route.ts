@@ -6,4 +6,3 @@ export async function GET() {
         hasPassword: !!process.env.SMTP_PASSWORD,
     })
 }
-
