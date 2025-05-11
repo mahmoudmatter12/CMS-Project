@@ -25,7 +25,6 @@ export default async function RootLayout({
         <body className="bg-gray-950 text-gray-100 antialiased motion-reduce:transform-none">
           <main className="min-h-screen relative overflow-hidden">
             <Decoration />
-            <Decoration />
             <AccountMenu />
             <div className="container mx-auto px-4 md:px-6 py-8 relative z-10">
               {children}
