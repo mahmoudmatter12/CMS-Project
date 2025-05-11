@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CollageMangmentSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class AddPendingChanges1 : Migration
+    public partial class neonSetUp : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -73,6 +73,7 @@ namespace CollageMangmentSystem.Migrations
                     Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     CreditHours = table.Column<int>(type: "integer", nullable: false),
                     Semester = table.Column<int>(type: "integer", nullable: true),
+                    CourseCode = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     DepartmentId = table.Column<Guid>(type: "uuid", nullable: true),
                     IsOpen = table.Column<bool>(type: "boolean", nullable: false),
                     PrerequisiteCourseIds = table.Column<List<Guid>>(type: "uuid[]", nullable: false),
@@ -103,7 +104,6 @@ namespace CollageMangmentSystem.Migrations
                     StudentCount = table.Column<int>(type: "integer", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     HDDID = table.Column<Guid>(type: "uuid", nullable: true),
-                    HDDId = table.Column<Guid>(type: "uuid", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
@@ -124,11 +124,13 @@ namespace CollageMangmentSystem.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     FullName = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    PasswordHash = table.Column<byte[]>(type: "bytea", nullable: false),
-                    PasswordSalt = table.Column<byte[]>(type: "bytea", nullable: false),
-                    RefreshToken = table.Column<string>(type: "text", nullable: true),
-                    RefreshTokenExpiry = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    ClerkId = table.Column<string>(type: "text", nullable: false),
+                    IsBoarded = table.Column<bool>(type: "boolean", nullable: false),
                     Role = table.Column<int>(type: "integer", nullable: false),
+                    StudentCollageId = table.Column<string>(type: "text", nullable: true),
+                    ProfilePicture = table.Column<string>(type: "text", nullable: true),
+                    Level = table.Column<string>(type: "text", nullable: true),
+                    CGPA = table.Column<float>(type: "real", nullable: true),
                     DepartmentId = table.Column<Guid>(type: "uuid", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -193,9 +195,9 @@ namespace CollageMangmentSystem.Migrations
                 column: "DepartmentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Departments_HDDId",
+                name: "IX_Departments_HDDID",
                 table: "Departments",
-                column: "HDDId");
+                column: "HDDID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_QuizQuestions_QuizId",
@@ -231,11 +233,12 @@ namespace CollageMangmentSystem.Migrations
                 principalColumn: "Id");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Departments_Users_HDDId",
+                name: "FK_Departments_Users_HDDID",
                 table: "Departments",
-                column: "HDDId",
+                column: "HDDID",
                 principalTable: "Users",
-                principalColumn: "Id");
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
         }
 
         /// <inheritdoc />

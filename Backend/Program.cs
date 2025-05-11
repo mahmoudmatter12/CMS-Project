@@ -9,7 +9,6 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using CollageManagementSystem.Services;
-// using CollageManagementSystem.Middleware;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using CollageMangmentSystem.Core.Entities.course;
@@ -26,7 +25,10 @@ builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
 // Add infrastructure services
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Postgres")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Postgres"),
+                      o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery))
+);
+
 // Register repositories
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped(typeof(IDepRepostaory<>), typeof(DepRepostaory<>));
@@ -123,7 +125,7 @@ builder.Services.AddAuthentication(options =>
         OnMessageReceived = context =>
         {
             // Try to get token from cookie first
-            context.Token = context.Request.Cookies["accessToken"] ?? 
+            context.Token = context.Request.Cookies["accessToken"] ??
                             context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
             return Task.CompletedTask;
         }
@@ -139,7 +141,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend", policy =>
     {
         policy.WithOrigins(
-                "http://localhost:3000", 
+                "http://localhost:3000",
                 "https://yourproductiondomain.com"
               )
               .AllowAnyHeader()

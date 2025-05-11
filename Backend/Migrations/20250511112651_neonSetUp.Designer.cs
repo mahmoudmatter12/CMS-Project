@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CollageMangmentSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250504172507_AddPendingChanges1")]
-    partial class AddPendingChanges1
+    [Migration("20250511112651_neonSetUp")]
+    partial class neonSetUp
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -80,6 +80,13 @@ namespace CollageMangmentSystem.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<float?>("CGPA")
+                        .HasColumnType("real");
+
+                    b.Property<string>("ClerkId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -104,25 +111,23 @@ namespace CollageMangmentSystem.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsBoarded")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<byte[]>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("bytea");
-
-                    b.Property<byte[]>("PasswordSalt")
-                        .IsRequired()
-                        .HasColumnType("bytea");
-
-                    b.Property<string>("RefreshToken")
+                    b.Property<string>("Level")
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("RefreshTokenExpiry")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<string>("ProfilePicture")
+                        .HasColumnType("text");
 
                     b.Property<int>("Role")
                         .HasColumnType("integer");
+
+                    b.Property<string>("StudentCollageId")
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -145,6 +150,11 @@ namespace CollageMangmentSystem.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<string>("CourseCode")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<Guid?>("CourseId")
                         .HasColumnType("uuid");
@@ -221,9 +231,6 @@ namespace CollageMangmentSystem.Migrations
                     b.Property<Guid?>("HDDID")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("HDDId")
-                        .HasColumnType("uuid");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -242,7 +249,7 @@ namespace CollageMangmentSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("HDDId");
+                    b.HasIndex("HDDID");
 
                     b.ToTable("Departments");
                 });
@@ -395,7 +402,8 @@ namespace CollageMangmentSystem.Migrations
                 {
                     b.HasOne("CollageMangmentSystem.Core.Entities.User", "HDD")
                         .WithMany()
-                        .HasForeignKey("HDDId");
+                        .HasForeignKey("HDDID")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("HDD");
                 });

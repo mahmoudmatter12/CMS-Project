@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CollageManagementSystem.DTOs.Requests.Auth
 {
-    public class RegisterDto
+    public class CreateUserDto
     {
         [Required]
         [EmailAddress]
@@ -11,7 +11,6 @@ namespace CollageManagementSystem.DTOs.Requests.Auth
         public string FullName { get; set; } = string.Empty;
 
         public Guid? DepartmentId { get; set; }
-
         public string? ProfilePicture { get; set; } = string.Empty;
         public string? ClerkId { get; set; } = string.Empty;
         public bool IsBoarded { get; set; } = false;

@@ -162,7 +162,6 @@ namespace CollageMangmentSystem.Controllers
                     return NotFound($"User with ID {id} not found");
 
                 existingUser.FullName = user.FullName ?? existingUser.FullName;
-                existingUser.Email = user.Email ?? existingUser.Email;
                 existingUser.DepartmentId = user.DepartmentId != null ? Guid.Parse(user.DepartmentId) : existingUser.DepartmentId;
 
                 
