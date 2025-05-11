@@ -114,7 +114,11 @@ export default function StudentsTable() {
 
           <div className="flex items-center gap-2">
             <FiFilter className="text-gray-400" />
-            <select className="bg-gray-800 border border-gray-700 text-white text-sm rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+            <label htmlFor="programFilter" className="sr-only">Filter by Program</label>
+            <select
+              id="programFilter"
+              className="bg-gray-800 border border-gray-700 text-white text-sm rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            >
               <option value="">All Programs</option>
               <option value="cs">Computer Science</option>
               <option value="eng">Engineering</option>
