@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button'
-import { SignInButton , SignUpButton } from '@clerk/nextjs'
+import { SignInButton, SignUpButton } from '@clerk/nextjs'
 import React from 'react'
 
 function Authbtns() {
