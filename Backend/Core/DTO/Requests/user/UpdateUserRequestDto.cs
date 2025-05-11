@@ -4,15 +4,15 @@ namespace CollageMangmentSystem.Core.DTO.Requests
 {
     public class UpdateUserDto
     {
-        [MaxLength(100, ErrorMessage = "First name cannot exceed 100 characters")]
-        [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "First name can only contain letters")]
+        // [Required(ErrorMessage = "Full name is required")]
+        [MaxLength(100, ErrorMessage = "Full name cannot exceed 100 characters")]
+        [RegularExpression(@"^[a-zA-Z]*$", ErrorMessage = "Full name can only contain letters")]
         public string? FullName { get; set; }
-
-
-        [EmailAddress(ErrorMessage = "Invalid email format")]
-        [MaxLength(255, ErrorMessage = "Email cannot exceed 255 characters")]
-        public string? Email { get; set; }
-
+        public string? Role { get; set; }
+        public string? ProfilePicture { get; set; } = string.Empty;
+        public string? StudentCollageId { get; set; } = string.Empty;
+        public string? Level { get; set; }
+        public float? CGPA { get; set; } = float.NaN;
         public string? DepartmentId { get; set; }
 
     }
