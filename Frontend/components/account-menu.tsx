@@ -124,10 +124,10 @@ export function AccountMenu() {
 
               <motion.div variants={itemVariants}>
                 <Link
-                  href="/services"
+                  href="/collageGallary"
                   className="flex items-center gap-2 text-white hover:text-sky-600 font-medium transition-colors"
                 >
-                  Services
+                  Collage Gallery
                 </Link>
               </motion.div>
             </motion.div>

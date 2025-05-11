@@ -57,8 +57,8 @@ export default function Contact() {
                     {status && (
                         <p
                             className={cn(
-                                "mt-4 p-4 text-center rounded",
-                                status.success ? "bg-green-50 rounded-xl text-green-700" : "bg-red-50 text-red-800",
+                                "mt-4 p-4 text-center rounded-xl",
+                                status.success ? "bg-green-50 text-green-800" : "bg-red-50 text-red-800"
                             )}
                         >
                             {status.message}
