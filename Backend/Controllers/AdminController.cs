@@ -1,3 +1,4 @@
+using CollageMangmentSystem.Core.Entities.department;
 using CollageMangmentSystem.Core.Entities.user;
 using CollageMangmentSystem.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -12,8 +13,11 @@ namespace CollageMangmentSystem.Core.DTO.Requests.Admin
         private readonly IAdminReposatory _adminReposatory;
         private readonly ILogger<AdminController> _logger;
 
-        public AdminController(IAdminReposatory adminReposatory, ILogger<AdminController> logger)
+        private readonly IDepRepostaory<Department> _departmentRepository;
+
+        public AdminController(IAdminReposatory adminReposatory, ILogger<AdminController> logger, IDepRepostaory<Department> departmentRepository)
         {
+            _departmentRepository = departmentRepository;
             _adminReposatory = adminReposatory;
             _logger = logger;
         }
@@ -26,7 +30,6 @@ namespace CollageMangmentSystem.Core.DTO.Requests.Admin
             try
             {
                 var users = await _adminReposatory.GetAllUsersAsync();
-
                 return Ok(users);
             }
             catch (Exception ex)
@@ -54,6 +57,14 @@ namespace CollageMangmentSystem.Core.DTO.Requests.Admin
                 _logger.LogError(ex, "Error fetching user");
                 return StatusCode(500, "Internal server error");
             }
+        }
+
+        [HttpDelete("/{clerkId}/delete")]
+        public async Task<String> DeleteUser(string clerkId)
+        {
+            var s = await _adminReposatory.DeleteUser(clerkId);
+            return s;
+
         }
 
         [HttpGet("users/email/{email}")]
@@ -111,7 +122,8 @@ namespace CollageMangmentSystem.Core.DTO.Requests.Admin
             try
             {
                 await _adminReposatory.ToggleUserRoleAsync(userId, role);
-                return Ok(new{
+                return Ok(new
+                {
                     message = "User Updated successfully , Now the user is " + role,
                 });
             }

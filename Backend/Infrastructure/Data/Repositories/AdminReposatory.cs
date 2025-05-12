@@ -55,6 +55,8 @@ public class AdminReposatory : IAdminReposatory
                 StudentCollageId = u.StudentCollageId,
                 IsBoarded = u.IsBoarded,
                 DepName = DepartmentName,
+                Level = u.Level,
+                CGPA = u.CGPA
             });
         }
     
@@ -146,6 +148,8 @@ public class AdminReposatory : IAdminReposatory
         _context.Users.Update(user);
         await _context.SaveChangesAsync();
     }
+
+    
 
     // Enrollments
     public async Task<IEnumerable<UserEnrollments>> GetEnrollmentsByUserIdAsync(Guid userId)
@@ -282,5 +286,19 @@ public class AdminReposatory : IAdminReposatory
             }).ToList()
             }
         };
+    }
+
+    public async Task<string> DeleteUser(string clerkId)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.ClerkId == clerkId);
+        if (user == null)
+        {
+            throw new KeyNotFoundException($"User with ClerkId {clerkId} not found.");
+        }
+
+        _context.Users.Remove(user);
+        await _context.SaveChangesAsync();
+
+        return $"User with ClerkId {clerkId} has been successfully deleted.";
     }
 }

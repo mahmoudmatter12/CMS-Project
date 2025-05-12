@@ -18,7 +18,7 @@ export default function StudentCard({ student, onDelete }: StudentCardProps) {
       <div className="relative">
         <div className="h-32 bg-gradient-to-r from-indigo-500 to-purple-600"></div>
         <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
-          <Avatar className="h-24 w-24 border-4 border-gray-800">
+          <Avatar className="h-24 w-24 border-4 border-gray-800 ">
             <AvatarImage src={student.profilePicture} alt={`${student.fullname}`} />
             <AvatarFallback className="bg-gray-700 text-white">
               {student.fullname[0]}
@@ -52,17 +52,17 @@ export default function StudentCard({ student, onDelete }: StudentCardProps) {
           <div className="bg-gray-800/50 rounded-lg p-3 text-center">
             <div className="text-xs text-gray-400 mb-1">Level</div>
             <div className="text-sm font-medium text-white">
-              {student.Level || '-'}
+              {student.level || '-'}
             </div>
           </div>
           <div className="bg-gray-800/50 rounded-lg p-3 text-center col-span-2">
             <div className="text-xs text-gray-400 mb-1">CGPA</div>
             <div className={`text-sm font-medium ${
-              student.CGPA && student.CGPA >= 3.0 ? 'text-green-400' :
-              student.CGPA && student.CGPA >= 2.0 ? 'text-amber-400' :
+              student.cgpa && student.cgpa >= 3.0 ? 'text-green-400' :
+              student.cgpa && student.cgpa >= 2.0 ? 'text-amber-400' :
               'text-red-400'
             }`}>
-              {student.CGPA || 'N/A'}
+              {student.cgpa || 'N/A'}
             </div>
           </div>
         </div>
@@ -82,7 +82,7 @@ export default function StudentCard({ student, onDelete }: StudentCardProps) {
             <FiEdit2 size={14} /> Edit
           </button>
           <button
-            onClick={() => student.id && onDelete(student.id)}
+            onClick={() => student.clerkId && onDelete(student.clerkId)}
             className="flex items-center gap-1 text-sm bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg transition-colors"
           >
             <FiTrash2 size={14} /> Delete

@@ -18,6 +18,8 @@ public interface IAdminReposatory
     Task<IEnumerable<User>> GetUsersByRoleAsync(UserRole role);
     Task<IEnumerable<User>> GetUsersByCourseAsync(Guid courseId);
     Task<IEnumerable<User>> GetUsersWithRolesAsync();  // Ensure returns `IEnumerable<T>`
+
+    Task<string> DeleteUser(string clerkId);
     Task ToggleUserRoleAsync(Guid userId ,UserRole role);
 
     // Enrollments

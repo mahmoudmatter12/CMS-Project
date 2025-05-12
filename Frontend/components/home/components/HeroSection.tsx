@@ -6,7 +6,6 @@ import Authbtns from './authbtns'
 import CompleteProfileMainForm from '@/components/onboarding/CompleteProfileMainForm'
 import { motion } from 'framer-motion'
 import { TypewriterEffectSmooth } from '@/components/ui/AceternityUi/typewriter-effect'
-
 export function HeroSection() {
   const { isLoaded, user } = useUser()
 
@@ -24,21 +23,18 @@ export function HeroSection() {
     Default: `Welcome back ${user?.fullName}! Explore your dashboard to get started.`
   }
 
+  const dashboardRoutes = {
+    Admin : "/admin/dashboard",
+    Student : "/user/dashboard",
+    Teacher : "/teacher/dashboard",
+  }
+
   return (
     <section className="relative min-h-[80vh] flex flex-col items-center justify-center px-4">
       {/* Animated Background Elements */}
 
       <div className="container relative z-10 mx-auto text-center">
-        {/* Animated Typography 
-        */}
-        {/* <motion.h1 
-          className="text-4xl md:text-6xl font-bold text-gray-100 mb-4"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          Welcome to <span className="text-cyan-400">Aceternity</span>
-        </motion.h1> */}
+
         <div className="flex flex-col items-center">
           <div className="mb-10 ">
             <TypewriterEffectSmooth words={words} className="text-center" />
@@ -97,10 +93,10 @@ export function HeroSection() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}
             >
-              <Link href="/dashboard">
+              <Link href={dashboardRoutes[user?.publicMetadata?.Role as keyof typeof dashboardRoutes] || "/dashboard"}>
                 <Button
                   variant="default"
-                  className="bg-gradient-to-r from-cyan-500 to-sky-600 hover:from-cyan-600 hover:to-sky-700 rounded-full px-8 py-6 text-lg font-semibold shadow-lg shadow-cyan-500/20 transition-all hover:shadow-cyan-500/40"
+                  className="bg-gradient-to-r cursor-pointer from-cyan-500 to-sky-600 hover:from-cyan-600 hover:to-sky-700 rounded-full px-8 py-6 text-lg font-semibold shadow-lg shadow-cyan-500/20 transition-all hover:shadow-cyan-500/40"
                 >
                   Go to Dashboard
                   <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,7 +107,7 @@ export function HeroSection() {
               <Link href="/about">
                 <Button
                   variant="outline"
-                  className="text-cyan-400 border-cyan-400 hover:bg-cyan-400/10 hover:text-cyan-300 rounded-full px-8 py-6 text-lg font-semibold transition-all"
+                  className="text-cyan-400 border-cyan-400 bg-gray-900/60 hover:bg-cyan-400/50 cursor-pointer hover:text-cyan-400 rounded-full px-8 py-6 text-lg font-semibold transition-all"
                 >
                   Learn More
                 </Button>

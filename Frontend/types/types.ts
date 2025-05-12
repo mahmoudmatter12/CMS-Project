@@ -9,8 +9,8 @@ export interface User {
   studentCollageId: string;
   isBoarded: boolean;
   role: UserRole;
-  CGPA: number;
-  Level: string;
+  cgpa: number;
+  level: string;
 }
 
 export enum userLeve {

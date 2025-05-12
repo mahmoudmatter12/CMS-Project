@@ -1,9 +1,9 @@
 import React from 'react'
 
-function collageGallary() {
+function CollageGallary() {
   return (
     <div>collageGallary</div>
   )
 }
 
-export default collageGallary
+export default CollageGallary

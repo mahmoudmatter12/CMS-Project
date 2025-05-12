@@ -26,17 +26,17 @@ export default function StudentsTable() {
     );
   });
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (clerkId: string) => {
     if (!confirm('Are you sure you want to delete this student?')) return;
 
     try {
-      const response = await fetch(`/api/admin/${id}`, { method: 'DELETE' });
+      const response = await fetch(`/api//admin/${clerkId}/delete`, { method: 'DELETE' });
       if (response.status === 400) {
         const error = await response.json();
         throw new Error(error.message);
       }
       if (response.ok) {
-        setStudents(prev => prev.filter(student => student.id !== id));
+        setStudents(prev => prev.filter(student => student.clerkId !== clerkId));
         toast.success('Student deleted successfully');
       }
     } catch (error) {
@@ -59,6 +59,8 @@ export default function StudentsTable() {
     };
     fetchStudents();
   }, []);
+
+  
 
 
   return (
@@ -130,7 +132,7 @@ export default function StudentsTable() {
       {/* Loading Skeleton */}
       {loading && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6">
-          {Array.from({ length: 8 }).map((_, index) => (
+          {Array.from({ length: 4 }).map((_, index) => (
             <StudentCardSkeleton key={index} />
           ))}
         </div>
@@ -202,14 +204,14 @@ export default function StudentsTable() {
                       </div>
                     </td>
                     <td className="px-6 py-4">{student.depName || '-'}</td>
-                    <td className="px-6 py-4">{student.Level || '-'}</td>
+                    <td className="px-6 py-4">{student.level || '-'}</td>
                     <td className="px-6 py-4">{student.role || '-'}</td>
                     <td className="px-6 py-4">
-                      <div className={`px-2 py-1 rounded-full text-xs font-medium ${student.CGPA && student.CGPA >= 3.5 ? 'bg-green-500/20 text-green-400' :
-                        student.CGPA && student.CGPA >= 2.5 ? 'bg-amber-500/20 text-amber-400' :
+                      <div className={`px-2 py-1 rounded-full text-xs font-medium ${student.cgpa && student.cgpa >= 3.5 ? 'bg-green-500/20 text-green-400' :
+                        student.cgpa && student.cgpa >= 2.5 ? 'bg-amber-500/20 text-amber-400' :
                           'bg-red-500/20 text-red-400'
                         }`}>
-                        {student.CGPA || 'N/A'}
+                        {student.cgpa || 'N/A'}
                       </div>
                     </td>
                     <td className="px-6 py-4 text-right">
@@ -229,7 +231,7 @@ export default function StudentsTable() {
                           <FiEdit2 />
                         </button>
                         <button
-                          onClick={() => student.id && handleDelete(student.id)}
+                          onClick={() => student.id && handleDelete(student.clerkId)}
                           className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                           title="Delete"
                         >

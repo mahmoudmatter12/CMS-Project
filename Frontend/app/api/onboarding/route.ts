@@ -1,23 +1,12 @@
 import { NextResponse } from "next/server";
-import { userLeve } from "@/types/types";
+import { User, userLeve } from "@/types/types";
 import { clerkClient } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
-interface UserObject {
-  email?: string;
-  fullName: string;
-  departmentId: string;
-  profilePicture: string;
-  clerkId: string;
-  studentCollageId: string;
-  level: string;
-  IsBoarded: boolean;
-  role: string;
-}
 
 export async function POST(request: Request) {
   try {
-    const userObject: UserObject = await request.json();
+    const userObject: User = await request.json();
     console.log("Received user object:", userObject);
     // Validate required fields
     if (
