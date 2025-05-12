@@ -1,9 +1,9 @@
-'use client';
+"use client"
 
-import { useState } from 'react';
-import { useForm, SubmitHandler, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { useState } from "react"
+import { useForm, type SubmitHandler, Controller } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import type { z } from "zod"
 import {
     Dialog,
     DialogContent,
@@ -11,112 +11,97 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import { toast } from 'sonner';
-import { FiPlus, FiEdit2, FiBook, FiLock, FiBookOpen } from 'react-icons/fi';
-import { FaGraduationCap } from 'react-icons/fa';
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
+import { toast } from "sonner"
+import { FiPlus, FiEdit2, FiBook, FiLock, FiBookOpen } from "react-icons/fi"
+import { FaGraduationCap } from "react-icons/fa"
+import { createCourseSchema } from "@/lib/schemas/CreateCourse"
+import { useCourseData } from "@/lib/hooks/use-course-data"
+import { MultiSelect } from "./multi-select"
 
-const subjectSchema = z.object({
-    subjectCode: z.string()
-        .min(1, 'Subject code is required')
-        .max(10, 'Code must be 10 characters or less')
-        .regex(/^[A-Z0-9]+$/, 'Only uppercase letters and numbers allowed'),
-    name: z.string()
-        .min(3, 'Name must be at least 3 characters')
-        .max(100, 'Name must be 100 characters or less'),
-    isOpen: z.boolean().default(false),
-    prerequisites: z.string()
-        .optional(),
-    creditHours: z.number()
-        .int()
-        .min(1, 'Minimum 1 credit hour')
-        .max(6, 'Maximum 6 credit hours')
-        .default(3),
-
-});
-
-type SubjectFormValues = z.infer<typeof subjectSchema>;
+type SubjectFormValues = z.infer<typeof createCourseSchema>
 
 interface SubjectFormProps {
-    defaultValues?: Partial<SubjectFormValues>;
-    isEdit?: boolean;
-    onSuccess?: () => void;
-    onOpenChange?: (open: boolean) => void;
+    defaultValues?: Partial<SubjectFormValues>
+    isEdit?: boolean
+    onSuccess?: () => void
+    onOpenChange?: (open: boolean) => void
+    children?: React.ReactNode
 }
 
-export default function NewSubjectForm({
-    defaultValues,
-    isEdit = false,
-    onSuccess,
-    onOpenChange
-}: SubjectFormProps) {
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isOpen, setIsOpen] = useState(false);
+export default function NewSubjectForm({ defaultValues, isEdit = false, onSuccess, onOpenChange  }: SubjectFormProps) {
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [isOpen, setIsOpen] = useState(false)
+    const { departments, courses, isLoadingDepartments, isLoadingCourses} = useCourseData()
 
     const {
         register,
         handleSubmit,
         reset,
         control,
-        formState: { errors, isDirty }
+        formState: { errors, isDirty },
     } = useForm<SubjectFormValues>({
-        resolver: zodResolver(subjectSchema),
+        resolver: zodResolver(createCourseSchema),
         defaultValues: {
-            subjectCode: '',
-            name: '',
+            name: "",
+            courseCode: "",
             isOpen: false,
-            prerequisites: '',
+            prerequisiteCourseIds: [],
             creditHours: 3,
-            ...defaultValues
-        }
-    });
+            semester: 1,
+            ...defaultValues,
+        },
+    })
+
+
+
 
     const handleOpenChange = (open: boolean) => {
-        setIsOpen(open);
-        if (!open) reset();
-        onOpenChange?.(open);
-    };
+        setIsOpen(open)
+        if (!open) reset()
+        onOpenChange?.(open)
+    }
 
     const handleFormSubmit: SubmitHandler<SubjectFormValues> = async (data) => {
-        setIsSubmitting(true);
+        console.log("Form data:", data)
+        setIsSubmitting(true)
         try {
-            const response = await fetch('/api/subjects/create', {
-                method: 'POST',
+
+            const response = await fetch("http://localhost:5168/api/Admin/course/create", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify({
-                    subjectName: data.name,
-                    subjectCode: data.subjectCode,
-                    isOpen: data.isOpen,
-                    prerequisites: data.prerequisites || '',
-                    creditHours: data.creditHours,
-                }),
-            });
+                body: JSON.stringify(data),
+            })
 
             if (!response.ok) {
-                const error = await response.json();
-                console.log(error);
-                console.log(data)
-                toast.error(error.error || 'An error occurred');
-                return;
+                const error = await response.json()
+                toast.error(error.error || "An error occurred")
+                return
             }
 
-            toast.success(`Subject ${isEdit ? 'updated' : 'created'} successfully!`);
-            handleOpenChange(false);
-            onSuccess?.();
-            reset();
+            toast.success(`Subject ${isEdit ? "updated" : "created"} successfully!`)
+            handleOpenChange(false)
+            onSuccess?.()
+            reset()
         } catch (error) {
-            console.error(error);
-            toast.error(error instanceof Error ? error.message : 'An error occurred');
+            console.error(error)
+            toast.error(error instanceof Error ? error.message : "An error occurred")
         } finally {
-            setIsSubmitting(false);
+            setIsSubmitting(false)
         }
-    };
+    }
+
+    // Convert courses to options format for MultiSelect
+    const prerequisiteOptions = courses.map((course) => ({
+        id: course.id,
+        label: `${course.courseCode} - ${course.name}`,
+    }))
 
     return (
         <Dialog open={isOpen} onOpenChange={handleOpenChange}>
@@ -137,15 +122,20 @@ export default function NewSubjectForm({
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2 text-white">
                         <FiBook size={20} />
-                        {isEdit ? 'Edit Subject' : 'Create New Subject'}
+                        {isEdit ? "Edit Subject" : "Create New Subject"}
                     </DialogTitle>
                     <DialogDescription>
-                        {isEdit ? 'Update the subject details below.' : 'Fill out the form to add a new subject.'}
+                        {isEdit ? "Update the subject details below." : "Fill out the form to add a new subject."}
                     </DialogDescription>
                 </DialogHeader>
-
+                <div className="flex items-center justify-between p-4 bg-gray-800 rounded-lg">
+                    <h2 className="text-lg font-semibold text-white">Subject Details</h2>
+                    <p className="text-sm text-gray-400">
+                        {isEdit ? "Update the subject details below." : "Fill out the form to add a new subject."}
+                    </p>
+                </div>
                 <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-                    <div className='grid grid-cols-2 gap-4'>
+                    <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             {/* Subject Code */}
                             <div className="space-y-2 text-white">
@@ -153,12 +143,10 @@ export default function NewSubjectForm({
                                 <Input
                                     id="subjectCode"
                                     placeholder="MATH101"
-                                    {...register('subjectCode')}
-                                    className={errors.subjectCode ? 'border-red-500' : ''}
+                                    {...register("courseCode")}
+                                    className={errors.courseCode ? "border-red-500" : ""}
                                 />
-                                {errors.subjectCode && (
-                                    <p className="text-sm text-red-500">{errors.subjectCode.message}</p>
-                                )}
+                                {errors.courseCode && <p className="text-sm text-red-500">{errors.courseCode.message}</p>}
                             </div>
                         </div>
 
@@ -168,30 +156,63 @@ export default function NewSubjectForm({
                             <Input
                                 id="name"
                                 placeholder="Calculus I"
-                                {...register('name')}
-                                className={errors.name ? 'border-red-500' : ''}
+                                {...register("name")}
+                                className={errors.name ? "border-red-500" : ""}
                             />
-                            {errors.name && (
-                                <p className="text-sm text-red-500">{errors.name.message}</p>
-                            )}
+                            {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
                         </div>
                     </div>
 
-                    {/* Prerequisites */}
-                    <div className="space-y-2 text-white">
-                        <Label htmlFor="prerequisites">Prerequisites</Label>
-                        <Input
-                            id="prerequisites"
-                            placeholder="MATH100, PHYS101 (comma separated)"
-                            {...register('prerequisites')}
+                    {/* Department - Select this first to filter prerequisites */}
+                    <div className="space-y-2">
+                        <Label htmlFor="departmentId" className="text-white">
+                            Department *
+                        </Label>
+                        <Controller
+                            name="departmentId"
+                            control={control}
+                            render={({ field }) => (
+                                <select id="departmentId" {...field} className="w-full p-2 border rounded-lg text-white min-h-[50px]">
+                                    <option value="">Select a department</option>
+                                    {isLoadingDepartments ? (
+                                        <option value="" disabled>
+                                            Loading departments...
+                                        </option>
+                                    ) : (
+                                        departments.map((department) => (
+                                            <option key={department.id} value={department.id}>
+                                                {department.name}
+                                            </option>
+                                        ))
+                                    )}
+                                </select>
+                            )}
                         />
-                        <p className="text-xs text-gray-400">Leave empty if no prerequisites</p>
+                        {errors.departmentId && <p className="text-sm text-red-500">{errors.departmentId.message}</p>}
                     </div>
+
+                    {/* Prerequisites - Using custom MultiSelect component */}
+                    <Controller
+                        name="prerequisiteCourseIds"
+                        control={control}
+                        render={({ field }) => (
+                            <MultiSelect
+                                label="Prerequisites"
+                                options={prerequisiteOptions}
+                                selectedValues={field.value || []}
+                                onChange={field.onChange}
+                                error={errors.prerequisiteCourseIds?.message}
+                                isLoading={isLoadingCourses}
+                            />
+                        )}
+                    />
 
                     <div className="grid grid-cols-2 gap-4">
                         {/* Credit Hours */}
                         <div className="space-y-2 ">
-                            <Label htmlFor="creditHours" className='text-white'>Credit Hours</Label>
+                            <Label htmlFor="creditHours" className="text-white">
+                                Credit Hours
+                            </Label>
                             <Controller
                                 name="creditHours"
                                 control={control}
@@ -203,73 +224,88 @@ export default function NewSubjectForm({
                                             min="1"
                                             max="6"
                                             {...field}
-                                            onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                                            onChange={(e) => field.onChange(Number.parseInt(e.target.value) || 0)}
                                             className="pl-10 text-white min-h-[50px]"
                                         />
                                         <FaGraduationCap className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                                     </div>
                                 )}
                             />
-                            {errors.creditHours && (
-                                <p className="text-sm text-red-500">{errors.creditHours.message}</p>
-                            )}
+                            {errors.creditHours && <p className="text-sm text-red-500">{errors.creditHours.message}</p>}
                         </div>
 
-                        {/* Status */}
+                        {/* Semester */}
                         <div className="space-y-2">
-                            <Label className='text-white'>Status</Label>
+                            <Label htmlFor="semester" className="text-white">
+                                Semester
+                            </Label>
                             <Controller
-                                name="isOpen"
+                                name="semester"
                                 control={control}
                                 render={({ field }) => (
-                                    <div className="flex items-center gap-3 p-2 border rounded-lg text-white min-h-[50px]">
-                                        {field.value ? (
-                                            <FiBookOpen className="text-green-500" />
-                                        ) : (
-                                            <FiLock className="text-red-500" />
-                                        )}
-                                        <Label htmlFor="isOpen" className="flex-1 cursor-pointer">
-                                            {field.value ? 'Open for Enrollment' : 'Closed for Enrollment'}
-                                        </Label>
-                                        <Checkbox
-                                            id="isOpen"
-                                            checked={field.value}
-                                            onCheckedChange={field.onChange}
-                                            className="h-5 w-5"
-                                        />
-                                    </div>
+                                    <Input
+                                        id="semester"
+                                        type="number"
+                                        min="1"
+                                        max="2"
+                                        {...field}
+                                        onChange={(e) => field.onChange(Number.parseInt(e.target.value) || 0)}
+                                        className="text-white min-h-[50px]"
+                                    />
                                 )}
                             />
+                            {errors.semester && <p className="text-sm text-red-500">{errors.semester.message}</p>}
                         </div>
                     </div>
 
+                    {/* Status */}
+                    <div className="space-y-2">
+                        <Label className="text-white">Status</Label>
+                        <Controller
+                            name="isOpen"
+                            control={control}
+                            render={({ field }) => (
+                                <div className="flex items-center gap-3 p-2 border rounded-lg text-white min-h-[50px]">
+                                    {field.value ? <FiBookOpen className="text-green-500" /> : <FiLock className="text-red-500" />}
+                                    <Label htmlFor="isOpen" className="flex-1 cursor-pointer">
+                                        {field.value ? "Open for Enrollment" : "Closed for Enrollment"}
+                                    </Label>
+                                    <Checkbox id="isOpen" checked={field.value} onCheckedChange={field.onChange} className="h-5 w-5" />
+                                </div>
+                            )}
+                        />
+                    </div>
+
                     <div className="flex justify-end gap-2 pt-4">
-                        <Button
-                            type="button"
-                            onClick={() => handleOpenChange(false)}
-                            className="gap-2 cursor-pointer border-1"
-                        >
+                        <Button type="button" onClick={() => handleOpenChange(false)} className="gap-2 cursor-pointer border-1">
                             Cancel
                         </Button>
                         <Button
                             type="submit"
                             disabled={isSubmitting || (!isEdit && !isDirty)}
                             variant="outline"
-                            className="cursor-pointer hover:bg-gray-300 text-black"
+                            className="cursor-pointer hover:bg-gray-900 text-black"
+                            onClick={() => {
+                                if (isEdit) {
+                                    toast("Updating subject...")
+                                } else {
+                                    toast("Creating subject...")
+                                }
+                            }}
                         >
                             {isSubmitting ? (
                                 <>
                                     <span className="animate-spin">↻</span> Processing...
                                 </>
                             ) : isEdit ? (
-                                'Update Subject'
+                                "Update Subject"
                             ) : (
-                                'Create Subject'
+                                "Create Subject"
                             )}
                         </Button>
                     </div>
                 </form>
             </DialogContent>
         </Dialog>
-    );
+    )
 }

@@ -51,3 +51,11 @@ export interface Event {
   coverImage: string;
   images: string[];
 }
+export interface Department {
+  id: string;
+  name: string;
+}
+
+// export interface Course{
+  
+// }
