@@ -28,7 +28,7 @@
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.6.1",
     "clsx": "^2.1.1",
-    "framer-motion": "^12.7.4",
+    "framer-motion": "^12.11.0",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.501.0",
     "motion": "^12.10.5",

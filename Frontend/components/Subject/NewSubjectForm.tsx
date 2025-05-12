@@ -255,7 +255,7 @@ export default function NewSubjectForm({
                             type="submit"
                             disabled={isSubmitting || (!isEdit && !isDirty)}
                             variant="outline"
-                            className="cursor-pointer hover:bg-gray-300"
+                            className="cursor-pointer hover:bg-gray-300 text-black"
                         >
                             {isSubmitting ? (
                                 <>
