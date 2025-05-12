@@ -40,7 +40,14 @@ export interface Course{
   courseCode: string;
 }
 
-
-// export interface Course{
-  
-// }
+export interface Event {
+  id: string;
+  title: string;
+  date: string;
+  location: string;
+  category: string;
+  attendees: number;
+  description: string;
+  coverImage: string;
+  images: string[];
+}
