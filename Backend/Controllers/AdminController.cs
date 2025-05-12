@@ -205,6 +205,20 @@ namespace CollageMangmentSystem.Core.DTO.Requests.Admin
                 return StatusCode(500, "Internal server error");
             }
         }
+        [HttpGet("courses/open")]
+        public async Task<IActionResult> GetOpenCourses()
+        {
+            try
+            {
+                var courses = await _adminReposatory.GetOpenCoursesAsync();
+                return Ok(courses);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching open courses");
+                return StatusCode(500, "Internal server error");
+            }
+        }
 
         [HttpPost("course/create")]
         public async Task<courseResponseDto> CreateCourse([FromBody] CreateCourseReqDto course)

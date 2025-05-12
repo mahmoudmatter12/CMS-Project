@@ -352,4 +352,30 @@ public class AdminReposatory : IAdminReposatory
 
         return $"Course with Id {courseId} has been successfully deleted.";
     }
+
+    public async Task<IEnumerable<courseResponseDto>> GetOpenCoursesAsync()
+    {
+        var courses = await _courseReposatory.GetAllAsync();
+        var openCourses = courses.Where(c => c.IsOpen).ToList();
+
+        var courseDtos = openCourses.Select(c => new courseResponseDto
+        {
+            Id = c.Id,
+            Name = c.Name,
+            DepartmentId = c.DepartmentId,
+            IsOpen = c.IsOpen,
+            PrerequisiteCourseIds = c.PrerequisiteCourseIds,
+            CourseCode = c.CourseCode,
+            CreditHours = c.CreditHours,
+            Semester = c.Semester
+        }).ToList();
+
+        foreach (var courseDto in courseDtos)
+        {
+            courseDto.DepName = await _departmentRepository.GetDepartmentName(courseDto.DepartmentId);
+            courseDto.PrerequisiteCourses = await _courseReposatory.GetCourseNamesByIds(courseDto.PrerequisiteCourseIds);
+        }
+
+        return courseDtos;
+    }
 }

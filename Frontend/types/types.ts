@@ -40,6 +40,10 @@ export interface Course{
   courseCode: string;
 }
 
+export interface Department {
+  id: string;
+  name: string;
+}
 
 // export interface Course{
   

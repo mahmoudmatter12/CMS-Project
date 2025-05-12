@@ -31,6 +31,7 @@ public interface IAdminReposatory
 
     // Courses
     Task<IEnumerable<courseResponseDto>> GetAllCoursesAsync();
+    Task<IEnumerable<courseResponseDto>> GetOpenCoursesAsync();
     Task<Course?> CreateCourseAsync(CreateCourseReqDto course);
     Task<string?> DeleteCourseAsync(string courseId);
     Task<Course?> GetCourseByIdAsync(Guid id);
