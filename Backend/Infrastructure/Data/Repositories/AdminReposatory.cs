@@ -1,7 +1,9 @@
+using CollageManagementSystem.Core.Entities.department;
 using CollageManagementSystem.Core.Entities.userEnrollments;
 using CollageManagementSystem.Services;
 using CollageMangmentSystem.Core.DTO.Responses;
 using CollageMangmentSystem.Core.DTO.Responses.CombiendDtos;
+using CollageMangmentSystem.Core.DTO.Responses.course;
 using CollageMangmentSystem.Core.Entities;
 using CollageMangmentSystem.Core.Entities.course;
 using CollageMangmentSystem.Core.Entities.department;
@@ -19,12 +21,15 @@ public class AdminReposatory : IAdminReposatory
     private readonly IUserEnrollments<UserEnrollments> _userEnrollmentsService;
     private readonly IUserService _userService;
 
+
     public AdminReposatory(
         ICourseReposatory<Course> courseReposatory,
         IDepRepostaory<Department> departmentRepository,
         IUserService userService,
         ApplicationDbContext context,
-        IUserEnrollments<UserEnrollments> userEnrollmentsService)
+        IUserEnrollments<UserEnrollments> userEnrollmentsService
+
+        )
     {
         _context = context;
         _courseReposatory = courseReposatory;
@@ -37,7 +42,7 @@ public class AdminReposatory : IAdminReposatory
     public async Task<IEnumerable<UserResponseDto>> GetAllUsersAsync()
     {
         var users = await _context.Users.ToListAsync();
-    
+
         var userDtos = new List<UserResponseDto>();
         foreach (var u in users)
         {
@@ -59,7 +64,7 @@ public class AdminReposatory : IAdminReposatory
                 CGPA = u.CGPA
             });
         }
-    
+
         return userDtos;
     }
 
@@ -149,7 +154,7 @@ public class AdminReposatory : IAdminReposatory
         await _context.SaveChangesAsync();
     }
 
-    
+
 
     // Enrollments
     public async Task<IEnumerable<UserEnrollments>> GetEnrollmentsByUserIdAsync(Guid userId)
@@ -178,9 +183,27 @@ public class AdminReposatory : IAdminReposatory
     }
 
     // Courses
-    public async Task<IEnumerable<Course>> GetAllCoursesAsync()
+    public async Task<IEnumerable<courseResponseDto>> GetAllCoursesAsync()
     {
-        return await _courseReposatory.GetAllAsync();
+        var courses = await _courseReposatory.GetAllAsync();
+        var courseDtos = courses.Select(c => new courseResponseDto
+        {
+            Id = c.Id,
+            Name = c.Name,
+            DepartmentId = c.DepartmentId,
+            IsOpen = c.IsOpen,
+            PrerequisiteCourseIds = c.PrerequisiteCourseIds,
+            CourseCode = c.CourseCode,
+            CreditHours = c.CreditHours,
+            Semester = c.Semester
+        }).ToList();
+        foreach (var courseDto in courseDtos)
+        {
+            courseDto.DepName = await _departmentRepository.GetDepartmentName(courseDto.DepartmentId);
+            courseDto.PrerequisiteCourses = await _courseReposatory.GetCourseNamesByIds(courseDto.PrerequisiteCourseIds);
+        }
+        return courseDtos;
+
     }
 
     public async Task<Course?> GetCourseByIdAsync(Guid id)
@@ -300,5 +323,33 @@ public class AdminReposatory : IAdminReposatory
         await _context.SaveChangesAsync();
 
         return $"User with ClerkId {clerkId} has been successfully deleted.";
+    }
+
+    public async Task<Course?> CreateCourseAsync(CreateCourseReqDto course)
+    {
+        var newcourse = new Course{
+            CourseCode = course.CourseCode,
+            CreditHours = course.CreditHours,
+            Name = course.Name,
+            DepartmentId = course.DepartmentId,
+            IsOpen = course.IsOpen,
+            PrerequisiteCourseIds = course.PrerequisiteCourseIds ?? new List<Guid>(),
+            Semester = course.Semester
+        };
+        await _context.Set<Course>().AddAsync(newcourse);
+        await _context.SaveChangesAsync();
+
+        return newcourse;
+    }
+
+    public async Task<string?> DeleteCourseAsync(string courseId)
+    {
+        var course = await _context.Courses.FirstOrDefaultAsync(c => c.Id.ToString() == courseId)
+            ?? throw new KeyNotFoundException($"Course with Id {courseId} not found.");
+
+        _context.Courses.Remove(course);
+        await _context.SaveChangesAsync();
+
+        return $"Course with Id {courseId} has been successfully deleted.";
     }
 }

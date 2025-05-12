@@ -1,3 +1,6 @@
+using CollageManagementSystem.Core.Entities.department;
+using CollageMangmentSystem.Core.DTO.Responses.course;
+using CollageMangmentSystem.Core.Entities.course;
 using CollageMangmentSystem.Core.Entities.department;
 using CollageMangmentSystem.Core.Entities.user;
 using CollageMangmentSystem.Core.Interfaces;
@@ -200,6 +203,48 @@ namespace CollageMangmentSystem.Core.DTO.Requests.Admin
             {
                 _logger.LogError(ex, "Error fetching courses");
                 return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpPost("course/create")]
+        public async Task<courseResponseDto> CreateCourse([FromBody] CreateCourseReqDto course)
+        {
+            try
+            {
+                var createdCourse = await _adminReposatory.CreateCourseAsync(course);
+                if (createdCourse == null)
+                {
+                    throw new Exception("Failed to create the course. The result is null.");
+                }
+                var createdCourseDto = new courseResponseDto{
+                    CourseCode = course.CourseCode,
+                    CreditHours = course.CreditHours,
+                    Name = course.Name
+                };
+                return createdCourseDto;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating course");
+                throw new Exception("An error occurred while creating the course.", ex);
+            }
+        }
+        [HttpDelete("course/{id}/delete")]
+        public async Task<string?> DeleteCourseAsync(string id)
+        {
+            try
+            {
+                var result = await _adminReposatory.DeleteCourseAsync(id);
+                if (result == null)
+                {
+                    return $"Course with ID {id} not found.";
+                }
+                return $"Course with ID {id} has been successfully deleted.";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting course");
+                throw new Exception("An error occurred while deleting the course.", ex);
             }
         }
 

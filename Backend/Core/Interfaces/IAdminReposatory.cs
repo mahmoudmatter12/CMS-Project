@@ -1,6 +1,8 @@
+using CollageManagementSystem.Core.Entities.department;
 using CollageManagementSystem.Core.Entities.userEnrollments;
 using CollageMangmentSystem.Core.DTO.Responses;
 using CollageMangmentSystem.Core.DTO.Responses.CombiendDtos;
+using CollageMangmentSystem.Core.DTO.Responses.course;
 using CollageMangmentSystem.Core.Entities;
 using CollageMangmentSystem.Core.Entities.course;
 using CollageMangmentSystem.Core.Entities.department;
@@ -28,7 +30,9 @@ public interface IAdminReposatory
     Task<UserEnrollments?> GetEnrollmentByIdAsync(Guid id);
 
     // Courses
-    Task<IEnumerable<Course>> GetAllCoursesAsync();
+    Task<IEnumerable<courseResponseDto>> GetAllCoursesAsync();
+    Task<Course?> CreateCourseAsync(CreateCourseReqDto course);
+    Task<string?> DeleteCourseAsync(string courseId);
     Task<Course?> GetCourseByIdAsync(Guid id);
     Task<IEnumerable<Course>> GetCoursesByNameAsync(string name);
     Task<IEnumerable<Course>> GetCoursesByDepartmentAsync(Guid departmentId);
