@@ -27,6 +27,20 @@ export enum UserRole {
   Teacher = "Teacher",  
 }
 
+export interface Course{
+  id: string;
+  name: string;
+  creditHours: number;
+  semester: number;
+  isOpen: boolean;
+  depName: string;
+  departmentId: string;
+  prerequisiteCourses: string[];
+  prerequisiteCourseIds: string[];
+  courseCode: string;
+}
+
+
 // export interface Course{
   
 // }

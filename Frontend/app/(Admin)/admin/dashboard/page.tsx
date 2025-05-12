@@ -1,3 +1,4 @@
+import ManagmentGrid from '@/components/admin/ManagmentGrid';
 import StudentsTable from '@/components/admin/student/StudentsTable';
 import React from 'react'
 
@@ -11,7 +12,7 @@ const Admin = () => {
       {/* StudentsTable is inside the table but properly structured */}
       <StudentsTable />
       {/* Managment Component */}
-      {/* <ManagmentGrid /> */}
+      <ManagmentGrid />
       {/* Statistics Based on CGPA */}
       {/* <CGPAPieChart /> Use the CGPA table component here */}
     </div>

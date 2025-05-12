@@ -42,44 +42,43 @@ namespace CollageMangmentSystem.Controllers
         //     return Ok(courseDtos);
         // }
         // paged
-        [HttpGet("all")]
-        [EnableRateLimiting("FixedWindowPolicy")]
-        [Authorize(Roles = "Admin,Student")] // this is available for admin and student
-        public async Task<IActionResult> GetAllCourses([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
-        {
-            var TotalCount = await _CourseRepo.GetCountAsync();
-            var courses = await _CourseRepo.GetAllAsyncPaged(pageNumber, pageSize);
-            var courseDtos = courses.Select(c => c.ToCourseResponseDto()).ToList();
-            foreach (var courseDto in courseDtos)
-            {
-                courseDto.DepName = await _depRepo.GetDepartmentName(courseDto.DepartmentId);
-                courseDto.PrerequisiteCourses = await _courseReposatory.GetCourseNamesByIds(courseDto.PrerequisiteCourseIds);
-            }
-            return Ok(new PagedResponse<courseResponseDto>
-            {
-                PageNumber = pageNumber,
-                PageSize = pageSize,
-                TotalCount = TotalCount,
-                TotalPages = (int)Math.Ceiling((double)TotalCount / pageSize),
-                Data = courseDtos
-            });
-        }
+        // [HttpGet("all")]
+        // [EnableRateLimiting("FixedWindowPolicy")]
+        // public async Task<IActionResult> GetAllCourses([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        // {
+        //     var TotalCount = await _CourseRepo.GetCountAsync();
+        //     var courses = await _CourseRepo.GetAllAsyncPaged(pageNumber, pageSize);
+        //     var courseDtos = courses.Select(c => c.ToCourseResponseDto()).ToList();
+        //     foreach (var courseDto in courseDtos)
+        //     {
+        //         courseDto.DepName = await _depRepo.GetDepartmentName(courseDto.DepartmentId);
+        //         courseDto.PrerequisiteCourses = await _courseReposatory.GetCourseNamesByIds(courseDto.PrerequisiteCourseIds);
+        //     }
+        //     return Ok(new PagedResponse<courseResponseDto>
+        //     {
+        //         PageNumber = pageNumber,
+        //         PageSize = pageSize,
+        //         TotalCount = TotalCount,
+        //         TotalPages = (int)Math.Ceiling((double)TotalCount / pageSize),
+        //         Data = courseDtos
+        //     });
+        // }
 
 
-        [HttpGet("{id:guid}")]
-        [EnableRateLimiting("FixedWindowPolicy")]
-        public async Task<IActionResult> GetCourseById(Guid id)
-        {
-            var course = await _CourseRepo.GetByIdAsync(id);
-            if (course == null)
-            {
-                return NotFound("Course not found");
-            }
-            var courseDtos = course.ToCourseResponseDto();
-            courseDtos.DepName = await _depRepo.GetDepartmentName(courseDtos.DepartmentId);
-            courseDtos.PrerequisiteCourses = await _courseReposatory.GetCourseNamesByIds(courseDtos.PrerequisiteCourseIds);
-            return Ok(courseDtos);
-        }
+        // [HttpGet("{id:guid}")]
+        // [EnableRateLimiting("FixedWindowPolicy")]
+        // public async Task<IActionResult> GetCourseById(Guid id)
+        // {
+        //     var course = await _CourseRepo.GetByIdAsync(id);
+        //     if (course == null)
+        //     {
+        //         return NotFound("Course not found");
+        //     }
+        //     var courseDtos = course.ToCourseResponseDto();
+        //     courseDtos.DepName = await _depRepo.GetDepartmentName(courseDtos.DepartmentId);
+        //     courseDtos.PrerequisiteCourses = await _courseReposatory.GetCourseNamesByIds(courseDtos.PrerequisiteCourseIds);
+        //     return Ok(courseDtos);
+        // }
 
         [HttpPost("add")]
         [EnableRateLimiting("FixedWindowPolicy")]
@@ -98,10 +97,11 @@ namespace CollageMangmentSystem.Controllers
                 IsOpen = course.IsOpen,
                 DepartmentId = course.DepartmentId,
                 PrerequisiteCourseIds = course.PrerequisiteCourseIds ?? new List<Guid>(),
+                CourseCode = course.CourseCode
             };
 
             await _CourseRepo.AddAsync(newCourse);
-            return CreatedAtAction(nameof(GetCourseById), new { id = newCourse.Id }, newCourse);
+            return CreatedAtAction(nameof(CreateCourse), new { id = newCourse.Id }, newCourse);
         }
 
         [HttpPost("Toggel/{id:guid}")]
