@@ -22,7 +22,13 @@ const nextConfig: NextConfig = {
         hostname: "res.cloudinary.com",
         pathname: "/**",
       },
+      {
+        protocol: 'https',
+        hostname: 'd3moma7wl9.ufs.sh',
+        pathname: '/f/**',
+      }
     ],
+    domains: ['images.pexels.com'],
   },
 };
 
