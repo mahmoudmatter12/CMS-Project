@@ -263,6 +263,9 @@ namespace CollageMangmentSystem.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -304,6 +307,8 @@ namespace CollageMangmentSystem.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
 
                     b.ToTable("Quizzes");
                 });
@@ -405,6 +410,15 @@ namespace CollageMangmentSystem.Migrations
                     b.Navigation("HDD");
                 });
 
+            modelBuilder.Entity("Core.Entities.Quizzes.Quiz", b =>
+                {
+                    b.HasOne("CollageMangmentSystem.Core.Entities.User", "Creator")
+                        .WithMany("Quiz")
+                        .HasForeignKey("CreatorId");
+
+                    b.Navigation("Creator");
+                });
+
             modelBuilder.Entity("Core.Entities.Quizzes.QuizQuestion", b =>
                 {
                     b.HasOne("Core.Entities.Quizzes.Quiz", "Quiz")
@@ -412,6 +426,11 @@ namespace CollageMangmentSystem.Migrations
                         .HasForeignKey("QuizId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.Navigation("Quiz");
+                });
+
+            modelBuilder.Entity("CollageMangmentSystem.Core.Entities.User", b =>
+                {
                     b.Navigation("Quiz");
                 });
 

@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using CollageMangmentSystem.Core.DTO.Responses;
 using CollageMangmentSystem.Core.Entities.department;
 using CollageMangmentSystem.Core.Entities.user;
+using Core.Entities.Quizzes;
 using Newtonsoft.Json.Serialization;
 
 namespace CollageMangmentSystem.Core.Entities
@@ -30,6 +31,11 @@ namespace CollageMangmentSystem.Core.Entities
         public string? Level { get; set; }
 
         public float? CGPA { get; set; } = float.NaN;
+
+        // foreign key to the quiz -- each quiz can be created by one user
+        
+        public ICollection<Quiz>? Quiz { get; set; }
+
         public string GetRoleByIndex(int roleIndex)
         {
             return roleIndex switch

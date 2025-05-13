@@ -14,6 +14,11 @@ namespace Core.Entities.Quizzes
         public int PassingMarks { get; set; }
         public bool IsActive { get; set; }
         public int? MaxAttempts { get; set; }
+
+        // foreign key to the creator -- each user can create multiple quizzes
+        // but each quiz can be created by only one user
+        public Guid? CreatorId { get; set; } // FK to User
+        public User? Creator { get; set; }   // Navigation property
         public ICollection<QuizQuestion> Questions { get; set; } = new List<QuizQuestion>();
 
         public string GetDurationString()

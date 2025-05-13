@@ -12,7 +12,6 @@ export async function POST(request: Request) {
     if (
       !userObject.email ||
       !userObject.clerkId ||
-      !userObject.departmentId ||
       !userObject.studentCollageId ||
       !userObject.level
     ) {

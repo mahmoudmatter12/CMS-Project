@@ -45,6 +45,47 @@ export interface Department {
   name: string;
 }
 
+export interface Quiz {
+  id: string;
+  title: string;
+  description: string;
+  subjectId: string;
+  subjectName: string;
+  dueDate: Date | null;
+  isPublished: boolean;
+  questions: Question[];
+  createdBy: User;
+
+}
+
+// {
+//   "title": "test",
+//   "description": "test",
+//   "startDate": "2025-05-12T22:12:43.251Z",
+//   "endDate": "2025-05-12T22:12:43.251Z",
+//   "duration": 10,
+//   "passingMarks": 10,
+//   "isActive": true,
+//   "maxAttempts": 0,
+//   "questions": [
+//     {
+//       "questionText": "string",
+//       "type": 0,
+//       "answers": [
+//         "string"
+//       ],
+//       "marks": 0,
+//       "correctAnswerIndex": 0,
+//       "hint": "string",
+//       "explanation": "string",
+//       "imageUrl": "string",
+//       "tags": [
+//         "string"
+//       ]
+//     }
+//   ]
+// }
+
 // export interface Course{
   
 // }

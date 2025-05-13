@@ -7,64 +7,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CollageMangmentSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class neonSetUp : Migration
+    public partial class addedcreatorId2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Quizzes",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Title = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: true),
-                    StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    Duration = table.Column<int>(type: "integer", nullable: false),
-                    PassingMarks = table.Column<int>(type: "integer", nullable: false),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    MaxAttempts = table.Column<int>(type: "integer", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedBy = table.Column<string>(type: "text", nullable: true),
-                    CreatedBy = table.Column<string>(type: "text", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Quizzes", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "QuizQuestions",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    QuestionText = table.Column<string>(type: "text", nullable: false),
-                    Type = table.Column<int>(type: "integer", nullable: false),
-                    Answers = table.Column<List<string>>(type: "text[]", nullable: false),
-                    CorrectAnswerIndex = table.Column<int>(type: "integer", nullable: false),
-                    Marks = table.Column<int>(type: "integer", nullable: false),
-                    Hint = table.Column<string>(type: "text", nullable: true),
-                    Explanation = table.Column<string>(type: "text", nullable: true),
-                    ImageUrl = table.Column<string>(type: "text", nullable: true),
-                    Tags = table.Column<List<string>>(type: "text[]", nullable: false),
-                    QuizId = table.Column<Guid>(type: "uuid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_QuizQuestions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_QuizQuestions_Quizzes_QuizId",
-                        column: x => x.QuizId,
-                        principalTable: "Quizzes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Courses",
                 columns: table => new
@@ -151,6 +98,38 @@ namespace CollageMangmentSystem.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Quizzes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    Duration = table.Column<int>(type: "integer", nullable: false),
+                    PassingMarks = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    MaxAttempts = table.Column<int>(type: "integer", nullable: true),
+                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DeletedBy = table.Column<string>(type: "text", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Quizzes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Quizzes_Users_CreatorId",
+                        column: x => x.CreatorId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserEnrollments",
                 columns: table => new
                 {
@@ -184,6 +163,33 @@ namespace CollageMangmentSystem.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "QuizQuestions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    QuestionText = table.Column<string>(type: "text", nullable: false),
+                    Type = table.Column<int>(type: "integer", nullable: false),
+                    Answers = table.Column<List<string>>(type: "text[]", nullable: false),
+                    CorrectAnswerIndex = table.Column<int>(type: "integer", nullable: false),
+                    Marks = table.Column<int>(type: "integer", nullable: false),
+                    Hint = table.Column<string>(type: "text", nullable: true),
+                    Explanation = table.Column<string>(type: "text", nullable: true),
+                    ImageUrl = table.Column<string>(type: "text", nullable: true),
+                    Tags = table.Column<List<string>>(type: "text[]", nullable: false),
+                    QuizId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_QuizQuestions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_QuizQuestions_Quizzes_QuizId",
+                        column: x => x.QuizId,
+                        principalTable: "Quizzes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Courses_CourseId",
                 table: "Courses",
@@ -203,6 +209,11 @@ namespace CollageMangmentSystem.Migrations
                 name: "IX_QuizQuestions_QuizId",
                 table: "QuizQuestions",
                 column: "QuizId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Quizzes_CreatorId",
+                table: "Quizzes",
+                column: "CreatorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserEnrollments_CourseId",

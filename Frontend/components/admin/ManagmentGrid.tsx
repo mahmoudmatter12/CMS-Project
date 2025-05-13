@@ -3,6 +3,7 @@ import { Course } from '@/lib/mock-data'
 import React, { useEffect } from 'react'
 import { useState } from 'react'
 import SubjectMainComp from '../Subject/SubjectMainComp'
+import QuizzesMainComp from '../quizzes/QuizzesMainComp'
 
 function ManagmentGrid() {
     const [subjects, setSubjects] = useState<Course[]>([])

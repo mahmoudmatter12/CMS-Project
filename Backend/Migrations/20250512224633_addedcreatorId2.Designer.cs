@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CollageMangmentSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250511112902_neonSetUpv2")]
-    partial class neonSetUpv2
+    [Migration("20250512224633_addedcreatorId2")]
+    partial class addedcreatorId2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -266,6 +266,9 @@ namespace CollageMangmentSystem.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -307,6 +310,8 @@ namespace CollageMangmentSystem.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
 
                     b.ToTable("Quizzes");
                 });
@@ -408,6 +413,15 @@ namespace CollageMangmentSystem.Migrations
                     b.Navigation("HDD");
                 });
 
+            modelBuilder.Entity("Core.Entities.Quizzes.Quiz", b =>
+                {
+                    b.HasOne("CollageMangmentSystem.Core.Entities.User", "Creator")
+                        .WithMany("Quiz")
+                        .HasForeignKey("CreatorId");
+
+                    b.Navigation("Creator");
+                });
+
             modelBuilder.Entity("Core.Entities.Quizzes.QuizQuestion", b =>
                 {
                     b.HasOne("Core.Entities.Quizzes.Quiz", "Quiz")
@@ -415,6 +429,11 @@ namespace CollageMangmentSystem.Migrations
                         .HasForeignKey("QuizId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.Navigation("Quiz");
+                });
+
+            modelBuilder.Entity("CollageMangmentSystem.Core.Entities.User", b =>
+                {
                     b.Navigation("Quiz");
                 });
 
