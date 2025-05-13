@@ -1,22 +1,23 @@
 'use client'
-import { Course } from '@/lib/mock-data'
 import React, { useEffect } from 'react'
 import { useState } from 'react'
 import SubjectMainComp from '../Subject/SubjectMainComp'
 import QuizzesMainComp from '../quizzes/QuizzesMainComp'
+import { Course } from '@/types/types'
 
 function ManagmentGrid() {
-    const [subjects, setSubjects] = useState<Course[]>([])
+    const [courses, setcourses] = useState<Course[]>([])
 
     const fetchSubjects = async () => {
         try {
-            const res = await fetch("http://localhost:5168/api/Admin/courses")
+            const res = await fetch("http://localhost:5168/api/Admin/courses/open")
             if (!res.ok) {
                 throw new Error(`HTTP error! status: ${res.status}`)
             }
             const data = await res.json()
-            if (data.subjects && Array.isArray(data.subjects)) {
-                setSubjects(data.subjects)
+            console.log("Fetched courses:", data)
+            if (Array.isArray(data)) {
+                setcourses(data)
             }
         } catch (error) {
             console.error("Error fetching subjects:", error)
@@ -31,7 +32,7 @@ function ManagmentGrid() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* All Subjects */}
             <SubjectMainComp />
-            {/* <QuizzesMainComp subjects={subjects} /> */}
+            <QuizzesMainComp courses={courses} />
         </div>
     )
 }

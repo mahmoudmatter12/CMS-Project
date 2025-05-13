@@ -13,30 +13,31 @@ import QuizCard from "./QuizCard"
 import { QuizForm } from "./QuizForm"
 import { FiRefreshCw } from "react-icons/fi"
 import { ScrollArea } from "@radix-ui/react-scroll-area"
-import { Course } from "@/types/types"
+import { Course, Quiz } from "@/types/types"
 
-interface ApiResponse {
-  quizzes: Quiz[]
-}
+// interface ApiResponse {
+//   quizzes: Quiz[]
+// }
 
 interface QuizzesMainCompProps {
-  subjects: Course[]
+  courses: Course[]
 }
 
-function QuizzesMainComp({ subjects }: QuizzesMainCompProps) {
+function QuizzesMainComp({ courses }: QuizzesMainCompProps) {
   const [quizzes, setQuizzes] = useState<Quiz[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<"all" | "published" | "draft">("all")
   const [searchQuery, setSearchQuery] = useState("")
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
-  //   const [subjects, setSubjects] = useState<Subject[]>([])
+  // const [Courses, setCourses] = useState<Course[]>([])
 
   const fetchQuizzes = async () => {
     setLoading(true)
     try {
-      const res = await fetch("/api/quizzes")
-      const data: ApiResponse = await res.json()
-      setQuizzes(data.quizzes)
+      const res = await fetch("http://localhost:5168/api/Quiz")
+      const data: Quiz[] = await res.json()
+      setQuizzes(data)
+      console.log(data)
     } catch (error) {
       console.error("Error fetching quizzes:", error)
       toast.error("Failed to load quizzes")
@@ -45,18 +46,18 @@ function QuizzesMainComp({ subjects }: QuizzesMainCompProps) {
     }
   }
 
-  //   const fetchSubjects = async () => {
-  //     try {
-  //       const res = await fetch("/api/subjects")
-  //       const data = await res.json()
-  //       if (data.subjects && Array.isArray(data.subjects)) {
-  //         setSubjects(data.subjects)
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching subjects:", error)
-  //       toast.error("Failed to load subjects")
+  // const fetchSubjects = async () => {
+  //   try {
+  //     const res = await fetch("/api/subjects")
+  //     const data = await res.json()
+  //     if (data.subjects && Array.isArray(data.subjects)) {
+  //       setCourses(data.subjects)
   //     }
+  //   } catch (error) {
+  //     console.error("Error fetching subjects:", error)
+  //     toast.error("Failed to load subjects")
   //   }
+  // }
 
   useEffect(() => {
     fetchQuizzes()
@@ -65,7 +66,7 @@ function QuizzesMainComp({ subjects }: QuizzesMainCompProps) {
 
   const handlePublishQuiz = async (id: string) => {
     try {
-      const response = await fetch(`/api/quizzes/${id}/publish`, {
+      const response = await fetch(`http://localhost:5168/api/Quiz/${id}/ToggleActive`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -74,16 +75,15 @@ function QuizzesMainComp({ subjects }: QuizzesMainCompProps) {
       })
 
       if (response.ok) {
-        const { message } = await response.json()
         setQuizzes((prevQuizzes) =>
           prevQuizzes.map((quiz) => {
             if (quiz.id === id) {
-              return { ...quiz, isPublished: !quiz.isPublished }
+              return { ...quiz, isActive: !quiz.isActive }
             }
             return quiz
           }),
         )
-        toast.success(message)
+        toast.success("Quiz status updated successfully")
       } else {
         const error = await response.json()
         throw new Error(error.message)
@@ -96,16 +96,15 @@ function QuizzesMainComp({ subjects }: QuizzesMainCompProps) {
 
   const handelDeleteQuiz = async (id: string) => {
     try {
-      const response = await fetch(`/api/quizzes/${id}`, {
+      const response = await fetch(`http://localhost:5168/api/Quiz/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },
       })
       if (response.ok) {
-        const { message } = await response.json()
         setQuizzes((prevQuizzes) => prevQuizzes.filter((quiz) => quiz.id !== id))
-        toast.success(message)
+        toast.success("Quiz deleted successfully")
       } else {
         const error = await response.json()
         throw new Error(error.message)
@@ -121,18 +120,18 @@ function QuizzesMainComp({ subjects }: QuizzesMainCompProps) {
     const matchesSearch =
       searchQuery === "" ||
       quiz.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (quiz.subject?.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (quiz.subject?.subjectCode || "").toLowerCase().includes(searchQuery.toLowerCase())
+      (quiz.courseName || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (quiz.description || "").toLowerCase().includes(searchQuery.toLowerCase())
 
     // Status filter
     const matchesStatus =
-      filter === "all" || (filter === "published" && quiz.isPublished) || (filter === "draft" && !quiz.isPublished)
+      filter === "all" || (filter === "published" && quiz.isActive) || (filter === "draft" && !quiz.isActive)
 
     return matchesSearch && matchesStatus
   })
 
-  const publishedCount = quizzes.filter((q) => q.isPublished).length
-  const draftCount = quizzes.filter((q) => !q.isPublished).length
+  const publishedCount = quizzes.filter((q) => q.isActive).length
+  const draftCount = quizzes.filter((q) => !q.isActive).length
 
   return (
     <Card className="border-gray-700 shadow-lg bg-gray-900/50 backdrop-blur-sm">
@@ -154,7 +153,7 @@ function QuizzesMainComp({ subjects }: QuizzesMainCompProps) {
               <FiRefreshCw className={`${loading ? 'animate-spin' : ''}`} />
               Refresh
             </Button>
-            <QuizForm subjects={subjects} onSuccess={fetchQuizzes} />
+            <QuizForm courses={courses} onSuccess={fetchQuizzes} />
           </div>
         </div>
 
@@ -253,13 +252,13 @@ function QuizzesMainComp({ subjects }: QuizzesMainCompProps) {
             <p className="text-gray-400 mb-6">
               {searchQuery ? "No quizzes match your search criteria" : "You haven't created any quizzes yet"}
             </p>
-            <QuizForm subjects={subjects} onSuccess={fetchQuizzes} />
+            <QuizForm courses={courses} onSuccess={fetchQuizzes} />
           </div>
         ) : (
           <ScrollArea className="h-[500px] overflow-y-auto custom-scrollbar">
             <div className={`grid gap-6 ${viewMode === "grid" ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1"}`}>
               {filteredQuizzes.map((quiz) => (
-                <QuizCard key={quiz.id} quiz={quiz} subjects={subjects} handelDeleteQuiz={handelDeleteQuiz} handelPublishQuiz={handlePublishQuiz} onSuccess={fetchQuizzes} />
+                <QuizCard key={quiz.id} quiz={quiz} courses={courses}  handleDeleteQuiz={handelDeleteQuiz} handlePublishQuiz={handlePublishQuiz} onSuccess={fetchQuizzes} />
               ))}
             </div>
           </ScrollArea>

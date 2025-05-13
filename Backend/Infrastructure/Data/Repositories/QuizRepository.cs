@@ -1,4 +1,5 @@
 using CollageManagementSystem.Core;
+using CollageMangmentSystem.Core.DTO.Responses.quiz;
 using Core.Entities.Quizzes;
 using Microsoft.EntityFrameworkCore;
 
@@ -124,6 +125,8 @@ namespace CollageMangmentSystem.Infrastructure.Data.Repositories
                 EndDate = quiz.EndDate ?? DateTime.MinValue,
                 TotalMarks = quiz.Questions.Sum(q => q.Marks),
                 TotalQuestions = quiz.Questions.Count,
+                CreatorName = GetCreatorNameById(quiz.CreatorId ?? Guid.Empty).Result,
+                CourseName = GetCourseNameById(quiz.CourseId ?? Guid.Empty).Result,
                 Questions = quiz.Questions.Select(q => new QuizQuestionResponseDto
                 {
                     QuestionText = q.QuestionText,
@@ -140,32 +143,46 @@ namespace CollageMangmentSystem.Infrastructure.Data.Repositories
         public async Task<IEnumerable<QuizWithQuestionsResponseDto>> GetQuizzesWithQuestionsAsync()
         {
             var quizzes = await _context.Quizzes
-                .Include(q => q.Questions)
-                .ToListAsync();
+            .Include(q => q.Questions)
+            .ToListAsync();
 
             var quizDtos = quizzes.Select(quiz => new QuizWithQuestionsResponseDto
             {
-                Id = quiz.Id,
-                Title = quiz.Title,
-                Description = quiz.Description ?? "No Description",
-                Duration = quiz.Duration,
-                PassingMarks = quiz.PassingMarks,
-                IsActive = quiz.IsActive,
-                StartDate = quiz.StartDate ?? DateTime.MinValue,
-                EndDate = quiz.EndDate ?? DateTime.MinValue,
-                TotalMarks = quiz.Questions.Sum(q => q.Marks),
-                TotalQuestions = quiz.Questions.Count,
-                Questions = quiz.Questions.Select(q => new QuizQuestionResponseDto
-                {
-                    QuestionText = q.QuestionText,
-                    Type = q.Type,
-                    Marks = q.Marks,
-                    Answers = q.Answers,
-                    CorrectAnswerIndex = q.CorrectAnswerIndex
-                }).ToList()
-            });
+            Id = quiz.Id,
+            Title = quiz.Title,
+            Description = quiz.Description ?? "No Description",
+            Duration = quiz.Duration,
+            PassingMarks = quiz.PassingMarks,
+            IsActive = quiz.IsActive,
+            StartDate = quiz.StartDate ?? DateTime.MinValue,
+            EndDate = quiz.EndDate ?? DateTime.MinValue,
+            TotalMarks = quiz.Questions.Sum(q => q.Marks),
+            TotalQuestions = quiz.Questions.Count,
+            CreatorName = GetCreatorNameById(quiz.CreatorId ?? Guid.Empty).Result,
+            CourseName = GetCourseNameById(quiz.CourseId ?? Guid.Empty).Result,
+            Questions = quiz.Questions.Select(q => new QuizQuestionResponseDto
+            {
+                QuestionText = q.QuestionText,
+                Type = q.Type,
+                Marks = q.Marks,
+                Answers = q.Answers,
+                CorrectAnswerIndex = q.CorrectAnswerIndex
+            }).ToList()
+            }).ToList();
 
-            return quizDtos.ToList();
+            return quizDtos;
+        }
+
+        private async Task<string> GetCourseNameById(Guid courseId)
+        {
+            var course = await _context.Courses.FindAsync(courseId);
+            return course?.Name ?? "Unknown Course";
+        }
+
+        private async Task<string> GetCreatorNameById(Guid creatorId)
+        {
+            var creator = await _context.Users.FindAsync(creatorId);
+            return creator?.FullName ?? "Unknown Creator";
         }
     }
 

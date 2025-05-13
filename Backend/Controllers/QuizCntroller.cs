@@ -69,6 +69,8 @@ namespace CollageManagementSystem
                 PassingMarks = quiz.PassingMarks,
                 IsActive = quiz.IsActive,
                 MaxAttempts = quiz.MaxAttempts,
+                CreatorId = quiz.CreatorId,
+                CourseId = quiz.CourseId,
                 Questions = quiz.Questions.Select(q => new QuizQuestion
                 {
                     QuestionText = q.QuestionText,
@@ -82,9 +84,6 @@ namespace CollageManagementSystem
                     Tags = q.Tags ?? new List<string>(),
                 }).ToList()
             };
-
-            if (!QuizValidator.IsValidQuiz(newQuiz, out var error))
-                return BadRequest(error);
 
             await _quizRepository.AddQuizAsync(newQuiz);
 
@@ -114,7 +113,6 @@ namespace CollageManagementSystem
         }
 
         [HttpPut("{id}/ToggleActive")]
-        [Authorize(Roles = "Student")]
         public async Task<IActionResult> ActivateQuiz(Guid id)
         {
             var quiz = await _quizRepository.GetQuizByIdAsync(id);

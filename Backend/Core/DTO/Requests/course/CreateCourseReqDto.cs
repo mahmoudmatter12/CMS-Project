@@ -13,6 +13,7 @@ namespace CollageManagementSystem.Core.Entities.department
 
         [Range(1, 10)]
         public int? Semester { get; set; }
+        public required string CourseCode { get; set; }
 
         public Guid? DepartmentId { get; set; }
 
@@ -20,7 +21,6 @@ namespace CollageManagementSystem.Core.Entities.department
 
         public List<Guid>? PrerequisiteCourseIds { get; set; } = new List<Guid>();
 
-        public required string CourseCode { get; set; }
     }
 
 }

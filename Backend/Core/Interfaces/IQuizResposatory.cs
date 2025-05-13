@@ -1,3 +1,4 @@
+using CollageMangmentSystem.Core.DTO.Responses.quiz;
 using Core.Entities.Quizzes;
 
 namespace CollageManagementSystem.Core

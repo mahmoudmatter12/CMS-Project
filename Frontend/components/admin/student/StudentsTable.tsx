@@ -15,7 +15,7 @@ export default function StudentsTable() {
   const [students, setStudents] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>('table');
 
   const filteredStudents = students.filter(student => {
     const searchLower = searchQuery.toLowerCase();

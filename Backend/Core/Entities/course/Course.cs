@@ -29,6 +29,8 @@ namespace CollageMangmentSystem.Core.Entities.course
         public List<Guid> PrerequisiteCourseIds { get; set; } = new List<Guid>();
         public List<Course> PrerequisiteCourses { get; set; } = new List<Course>();
 
+        public ICollection<Quiz>? CourseQuizzes { get; set; } = new List<Quiz>();
+
         public List<string> PrerequisiteCoursesNames()
         {
             return PrerequisiteCourses?.Select(c => c.Name).ToList() ?? new List<string>();

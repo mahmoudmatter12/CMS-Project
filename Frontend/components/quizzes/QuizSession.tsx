@@ -252,7 +252,7 @@ export default function QuizSession({ quiz, onComplete }: QuizSessionProps) {
             Question {currentStep + 1} of {quiz.questions.length}
           </div>
         </div>
-        <Progress value={progress} className="h-2 bg-gray-700" indicatorClassName="bg-indigo-500" />
+        <Progress value={progress} className="h-2 bg-gray-700" />
       </div>
 
       <Card className="bg-gray-800/50 border-gray-700">

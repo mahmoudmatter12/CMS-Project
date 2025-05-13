@@ -47,6 +47,8 @@ export default function SubjectMainComp() {
         }
     }
 
+    
+
     const handleDelete = async (id: string) => {
         const confirmDelete = confirm("Are you sure you want to delete this subject?")
         if (!confirmDelete) return
@@ -296,7 +298,7 @@ export default function SubjectMainComp() {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.2 }}
-                            className="h-[600px] overflow-y-auto"
+                            className="h-[450px] overflow-y-auto"
                         >
                             {loading ? (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">

@@ -1,71 +1,68 @@
 "use client"
 
+import type React from "react"
+
 import { useState, useRef } from "react"
 import { useForm, type SubmitHandler, Controller, useFieldArray } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
+import type { z } from "zod"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
-import { AlertCircle, Award, ChevronLeft, ChevronRight, Clock, Hash, Loader2, Plus, Trash2 } from "lucide-react"
+import {
+    AlertCircle,
+    Award,
+    BookOpen,
+    Calendar,
+    ChevronLeft,
+    ChevronRight,
+    Clock,
+    FileQuestion,
+    Hash,
+    HelpCircle,
+    Loader2,
+    Plus,
+    Trash2,
+} from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Separator } from "@/components/ui/separator"
+import { quizSchema } from "@/lib/schemas"
+import { QuestionType, type Quiz, type Question } from "@/types/types"
+import { useCurrentUser } from "@/lib/hooks/UseUser"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-// Zod schema for validation
-const quizSchema = z.object({
-    title: z.string().min(3, "Title must be at least 3 characters").max(100),
-    description: z.string().max(500).optional(),
-    subjectId: z.string().min(1, "Subject is required"),
-    isPublished: z.boolean().default(false),
-    dueDate: z.string().optional().nullable(),
-    timeLimit: z.number().min(1, "Minimum 1 minute").max(300, "Maximum 5 hours"),
-    maxAttempts: z.number().min(0, "Must be 0 or more").default(0),
-    passingScore: z.number().min(0, "Minimum 0%").max(100, "Maximum 100%").default(60),
-    questions: z
-        .array(
-            z.object({
-                text: z.string().min(5, "Question must be at least 5 characters"),
-                type: z.enum(["MULTIPLE_CHOICE", "TRUE_FALSE", "SHORT_ANSWER"]),
-                options: z.array(z.string().min(1, "Option cannot be empty")).min(2, "At least 2 options required"),
-                correctAnswer: z.number().min(0, "Select a correct answer"),
-                points: z.number().min(1, "Minimum 1 point").default(1),
-                textAnswer: z.string().optional(),
-            }),
-        )
-        .min(1, "At least one question is required"),
-})
-
+// Type for form values based on the provided schema
 type QuizFormValues = z.infer<typeof quizSchema>
 
 interface QuizFormProps {
-    subjects: { id: string; name: string; subjectCode: string }[]
-    defaultValues?: Partial<QuizFormValues> & { id?: string }
+    courses: { id: string; name: string; courseCode: string }[]
+    defaultValues?: Partial<Quiz>
     isEdit?: boolean
     onSuccess?: () => void
+    children?: React.ReactNode
 }
 
-
-export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }: QuizFormProps) {
+export function QuizForm({ courses, defaultValues, isEdit = false, onSuccess, children }: QuizFormProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [currentStep, setCurrentStep] = useState(1)
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const { user } = useCurrentUser()
 
     const formRef = useRef<HTMLFormElement>(null)
 
     const {
         register,
-        // handleSubmit,
         control,
         reset,
         watch,
-        // setValue,
         getValues,
         formState: { errors },
     } = useForm<QuizFormValues>({
@@ -73,13 +70,17 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
         defaultValues: {
             title: "",
             description: "",
-            subjectId: "",
-            isPublished: false,
-            dueDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
-            timeLimit: 30,
-            maxAttempts: 0,
-            passingScore: 60,
-            questions: [],
+            duration: 60, // 60 minutes by default
+            passingMarks: 50,
+            isActive: false,
+            startDate: null,
+            endDate: null,
+            totalMarks: 0,
+            totalQuestions: 0,
+            creatorId: user?.id || "",
+            courseId: "",
+            MaxAttempts: 0,
+            questions: [] as Question[],
             ...defaultValues,
         },
         mode: "onChange",
@@ -90,14 +91,7 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
         name: "questions",
     })
 
-
-
     const handleFormSubmit: SubmitHandler<QuizFormValues> = async (data) => {
-        // Get the complete form data from React Hook Form
-        const formData = getValues()
-        console.log("Form data from React Hook Form:", formData)
-        console.log("Form data from the function handel :", data)
-
         if (!confirm("Are you sure you want to submit the quiz?")) {
             return
         }
@@ -105,15 +99,30 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
         setIsSubmitting(true)
 
         try {
-            const endpoint = isEdit ? `/api/quizzes/${defaultValues?.id}/update` : "/api/quizzes/create"
+            // Calculate total marks and questions
+            const totalMarks = data.questions.reduce((sum, q) => sum + q.marks, 0)
+            const totalQuestions = data.questions.length
 
-            // Log the data being sent to the API
-            console.log("Sending data to API:", formData)
+            // Create the complete quiz object
+            const quizData = {
+                ...data,
+                questions: data.questions.map((q) => ({
+                    ...q,
+                    type: Object.values(QuestionType).indexOf(q.type),
+                })),
+                totalMarks,
+                totalQuestions,
+                creatorId: user?.id || data.creatorId,
+            }
+
+            const endpoint = isEdit ? `/api/quizzes/${defaultValues?.id}/update` : "http://localhost:5168/api/Quiz/create"
+
+            console.log("Sending quiz data:", quizData)
 
             const response = await fetch(endpoint, {
                 method: isEdit ? "PATCH" : "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
+                body: JSON.stringify(quizData),
             })
 
             if (!response.ok) {
@@ -135,13 +144,18 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
         }
     }
 
-    const addQuestion = (type: "MULTIPLE_CHOICE" | "TRUE_FALSE" | "SHORT_ANSWER") => {
-        const baseQuestion = {
-            text: "",
+    const addQuestion = (type: QuestionType) => {
+        const baseQuestion: Question = {
+            questionText: "",
             type,
-            points: 1,
-            correctAnswer: 0,
-            options: type === "TRUE_FALSE" ? ["True", "False"] : type === "MULTIPLE_CHOICE" ? ["", ""] : [""],
+            marks: 1,
+            correctAnswerIndex: type === QuestionType.TRUE_FALSE ? 0 : 0,
+            answers:
+                type === QuestionType.TRUE_FALSE ? ["True", "False"] : type === QuestionType.MULTIPLE_CHOICE ? ["", ""] : [""],
+            hint: "",
+            explanation: "",
+            imageUrl: "",
+            tags: [],
         }
         append(baseQuestion)
         setCurrentStep(2)
@@ -151,28 +165,34 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
         const currentQuestion = fields[questionIndex]
         update(questionIndex, {
             ...currentQuestion,
-            options: [...currentQuestion.options, ""]
+            answers: [...currentQuestion.answers, ""],
         })
     }
-
 
     const removeOption = (questionIndex: number, optionIndex: number) => {
         const currentQuestion = fields[questionIndex]
-        const newOptions = currentQuestion.options.filter((_, idx) => idx !== optionIndex)
+        const newAnswers = currentQuestion.answers.filter((_, idx) => idx !== optionIndex)
 
         update(questionIndex, {
             ...currentQuestion,
-            options: newOptions,
+            answers: newAnswers,
             // Adjust correct answer if needed
-            correctAnswer: currentQuestion.correctAnswer >= optionIndex
-                ? Math.max(0, currentQuestion.correctAnswer - 1)
-                : currentQuestion.correctAnswer
+            correctAnswerIndex:
+                typeof currentQuestion.correctAnswerIndex === "number" && currentQuestion.correctAnswerIndex >= optionIndex
+                    ? Math.max(0, currentQuestion.correctAnswerIndex - 1)
+                    : currentQuestion.correctAnswerIndex,
         })
     }
 
-    const isStep1Valid = watch("title") && watch("subjectId")
-    const totalPoints = fields.reduce((sum, field) => sum + (field.points || 1), 0)
+    // Calculate total marks for display
+    const totalMarks = fields.reduce((sum, field) => sum + (field.marks || 1), 0)
 
+    // Check if step 1 is valid
+    const isStep1Valid = !!watch("title") && !!watch("courseId") && watch("duration") > 0 && watch("passingMarks") > 0
+
+    // Get selected course details
+    const selectedCourseId = watch("courseId")
+    const selectedCourse = courses.find((course) => course.id === selectedCourseId)
 
     return (
         <Dialog
@@ -184,18 +204,20 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
             }}
         >
             <DialogTrigger asChild>
-                <Button className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white">
-                    <Plus size={16} />
-                    {isEdit ? "Edit Quiz" : "Create Quiz"}
-                </Button>
+                {children || (
+                    <Button className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white">
+                        <Plus size={16} />
+                        {isEdit ? "Edit Quiz" : "Create Quiz"}
+                    </Button>
+                )}
             </DialogTrigger>
             <DialogContent
                 onInteractOutside={(e) => e.preventDefault()}
-                className="sm:max-w-2xl bg-gray-900/80 backdrop-blur-sm border-gray-700 max-h-[90vh] overflow-y-auto"
+                className="sm:max-w-3xl bg-gray-900/80 backdrop-blur-sm border-gray-700 max-h-[90vh] overflow-y-auto"
             >
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2 text-xl text-white">
-                        <AlertCircle className="h-5 w-5 text-indigo-400" />
+                        <FileQuestion className="h-5 w-5 text-indigo-400" />
                         {isEdit ? "Edit Quiz" : "Create New Quiz"}
                     </DialogTitle>
                 </DialogHeader>
@@ -203,8 +225,10 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
                 {/* Progress Steps */}
                 <div className="flex items-center justify-between mb-6">
                     <div className={`flex items-center ${currentStep === 1 ? "text-indigo-400" : "text-gray-400"}`}>
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${currentStep === 1 ? "bg-indigo-600 text-white" : "bg-gray-700"
-                            }`}>
+                        <div
+                            className={`w-8 h-8 rounded-full flex items-center justify-center ${currentStep === 1 ? "bg-indigo-600 text-white" : "bg-gray-700"
+                                }`}
+                        >
                             1
                         </div>
                         <span className="ml-2 font-medium">Quiz Details</span>
@@ -213,8 +237,10 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
                     <div className="flex-1 h-px bg-gray-700 mx-4"></div>
 
                     <div className={`flex items-center ${currentStep === 2 ? "text-indigo-400" : "text-gray-400"}`}>
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${currentStep === 2 ? "bg-indigo-600 text-white" : "bg-gray-700"
-                            }`}>
+                        <div
+                            className={`w-8 h-8 rounded-full flex items-center justify-center ${currentStep === 2 ? "bg-indigo-600 text-white" : "bg-gray-700"
+                                }`}
+                        >
                             2
                         </div>
                         <span className="ml-2 font-medium">Questions</span>
@@ -225,214 +251,331 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
                     ref={formRef}
                     onSubmit={(e) => {
                         e.preventDefault()
-                        const formData = new FormData(formRef.current!)
-                        const data = Object.fromEntries(formData.entries())
-                        const quizData = {
-                            title: data.title as string,
-                            description: data.description as string,
-                            subjectId: data.subjectId as string,
-                            isPublished: data.isPublished === "true",
-                            dueDate: data.dueDate ? (data.dueDate as string) : null,
-                            timeLimit: parseInt(data.timeLimit as string, 10),
-                            maxAttempts: parseInt(data.maxAttempts as string, 10),
-                            passingScore: parseInt(data.passingScore as string, 10),
-                            questions: fields.map((field, index) => ({
-                                text: data[`questions.${index}.text`] as string,
-                                type: data[`questions.${index}.type`] as "MULTIPLE_CHOICE" | "TRUE_FALSE" | "SHORT_ANSWER",
-                                points: parseInt(data[`questions.${index}.points`] as string, 10),
-                                options: Array.isArray(data[`questions.${index}.options`])
-                                    ? (typeof data[`questions.${index}.options`] === "string"
-                                        ? (data[`questions.${index}.options`] as string).split(",")
-                                        : [])
-                                    : [(data[`questions.${index}.options.0`] as string)],
-                                correctAnswer: parseInt(data[`questions.${index}.correctAnswer`] as string, 10) || 0,
-                            })),
-                        }
-                        handleFormSubmit(quizData)
+                        handleFormSubmit(getValues())
                     }}
                     className="space-y-6"
                     onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
                 >
                     {/* Step 1: Quiz Details */}
-                    <div className={currentStep !== 1 ? "hidden" : "space-y-4"}>
-                        <div className="grid grid-cols-2 gap-4">
-                            {/* Quiz Title */}
-                            <div className="space-y-2 col-span-2">
-                                <Label htmlFor="title" className="text-white">
-                                    Quiz Title <span className="text-rose-500">*</span>
-                                </Label>
-                                <Input
-                                    id="title"
-                                    {...register("title")}
-                                    placeholder="Introduction to Calculus"
-                                    className={`bg-gray-800 border-gray-700 text-white ${errors.title ? "border-rose-500" : ""}`}
-
-                                />
-                                {errors.title && <p className="text-rose-500 text-sm">{errors.title.message}</p>}
-                            </div>
-
-                            {/* Subject Selection */}
-                            <div className="space-y-2">
-                                <Label htmlFor="subject" className="text-white">
-                                    Subject <span className="text-rose-500">*</span>
-                                </Label>
-                                <Controller
-                                    name="subjectId"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <Select onValueChange={field.onChange} value={field.value}>
-                                            <SelectTrigger
-                                                id="subject"
-                                                className={`bg-gray-800 border-gray-700 text-white ${errors.subjectId ? "border-rose-500" : ""}`}
-                                            >
-                                                <SelectValue placeholder="Select subject" />
-                                            </SelectTrigger>
-                                            <SelectContent className="bg-gray-800 border-gray-700 text-white">
-                                                {subjects.map((subject) => (
-                                                    <SelectItem
-                                                        key={subject.id}
-                                                        value={subject.id}
-                                                        className="hover:bg-gray-700"
-                                                    >
-                                                        {subject.subjectCode} - {subject.name}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    )}
-                                />
-                                {errors.subjectId && <p className="text-rose-500 text-sm">{errors.subjectId.message}</p>}
-                                <input type="hidden" name="subjectId" value={watch("subjectId")} />
-                            </div>
-
-                            {/* Time Limit */}
-                            <div className="space-y-2">
-                                <Label htmlFor="timeLimit" className="flex items-center gap-2 text-white">
-                                    <Clock className="h-4 w-4 text-indigo-400" /> Time Limit (mins) <span className="text-rose-500">*</span>
-                                </Label>
-                                <Input
-                                    id="timeLimit"
-                                    type="number"
-                                    {...register("timeLimit", { valueAsNumber: true })}
-                                    min="1"
-                                    max="300"
-                                    className={`bg-gray-800 border-gray-700 text-white ${errors.timeLimit ? "border-rose-500" : ""}`}
-                                />
-                                {errors.timeLimit && <p className="text-rose-500 text-sm">{errors.timeLimit.message}</p>}
-                            </div>
-                        </div>
-
-                        {/* Description */}
-                        <div className="space-y-2">
-                            <Label htmlFor="description" className="text-white">Description</Label>
-                            <Textarea
-                                id="description"
-                                {...register("description")}
-                                placeholder="Brief description of the quiz"
-                                rows={3}
-                                className="bg-gray-800 border-gray-700 text-white resize-none"
-                            // value={isEdit ? watch("description") : ""}
-                            />
-                        </div>
-
-                        <div className="grid grid-cols-3 gap-4">
-                            {/* Max Attempts */}
-                            <div className="space-y-2">
-                                <Label htmlFor="maxAttempts" className="flex items-center gap-2 text-white">
-                                    <Hash className="h-4 w-4 text-indigo-400" /> Max Attempts
-                                </Label>
-                                <TooltipProvider>
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <Input
-                                                id="maxAttempts"
-                                                type="number"
-                                                {...register("maxAttempts", { valueAsNumber: true })}
-                                                min="0"
-                                                placeholder="0 = unlimited"
-                                                className="bg-gray-800 border-gray-700 text-white"
-                                            />
-                                        </TooltipTrigger>
-                                        <TooltipContent className="bg-gray-800 border-gray-700 text-white">
-                                            <p>Set to 0 for unlimited attempts</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
-                            </div>
-
-                            {/* Passing Score */}
-                            <div className="space-y-2">
-                                <Label htmlFor="passingScore" className="flex items-center gap-2 text-white">
-                                    <Award className="h-4 w-4 text-indigo-400" /> Passing Score (%)
-                                </Label>
-                                <Input
-                                    id="passingScore"
-                                    type="number"
-                                    {...register("passingScore", { valueAsNumber: true })}
-                                    min="0"
-                                    max="100"
-                                    className="bg-gray-800 border-gray-700 text-white"
-                                />
-                            </div>
-
-                            {/* Due Date */}
-                            <div className="space-y-2">
-                                <Label htmlFor="dueDate" className="text-white">Due Date</Label>
-                                <Input
-                                    id="dueDate"
-                                    type="datetime-local"
-                                    {...register("dueDate")}
-                                    min={new Date().toISOString().slice(0, 16)}
-                                    className="bg-gray-800 border-gray-700 text-white"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Publish Toggle */}
+                    <div className={currentStep !== 1 ? "hidden" : "space-y-6"}>
                         <Card className="bg-gray-800/50 border-gray-700">
-                            <CardContent className="p-4">
-                                <div className="flex items-center gap-3">
+                            <CardHeader className="pb-3">
+                                <CardTitle className="text-lg text-white flex items-center gap-2">
+                                    <BookOpen className="h-5 w-5 text-indigo-400" />
+                                    Basic Information
+                                </CardTitle>
+                                <CardDescription>Enter the basic details for your quiz</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                {/* Quiz Title */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="title" className="text-white">
+                                        Quiz Title <span className="text-rose-500">*</span>
+                                    </Label>
+                                    <Input
+                                        id="title"
+                                        {...register("title")}
+                                        placeholder="Introduction to Calculus"
+                                        className={`bg-gray-800 border-gray-700 text-white ${errors.title ? "border-rose-500" : ""}`}
+                                    />
+                                    {errors.title && <p className="text-rose-500 text-sm">{errors.title.message}</p>}
+                                </div>
+
+                                {/* Course Selection - Enhanced with Command */}
+
+                                {/* Course Selection - Fixed Implementation */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="course" className="text-white">
+                                        Course <span className="text-rose-500">*</span>
+                                    </Label>
                                     <Controller
-                                        name="isPublished"
+                                        name="courseId"
                                         control={control}
                                         render={({ field }) => (
-                                            <>
-                                                <Checkbox
-                                                    id="isPublished"
-                                                    checked={field.value}
-                                                    onCheckedChange={field.onChange}
-                                                    className="h-5 w-5 border-gray-600 data-[state=checked]:bg-indigo-600"
-                                                />
-                                                <Label htmlFor="isPublished" className="text-white cursor-pointer">
-                                                    Publish this quiz immediately
-                                                </Label>
-                                                <input type="hidden" name="isPublished" value={field.value ? "true" : "false"} />
-                                            </>
+                                            <Select onValueChange={field.onChange} value={field.value || ""}>
+                                                <SelectTrigger
+                                                    id="course"
+                                                    className={`bg-gray-800 border-gray-700 text-white ${errors.courseId ? "border-rose-500" : ""}`}
+                                                >
+                                                    <SelectValue placeholder="Select course" />
+                                                </SelectTrigger>
+                                                <SelectContent className="bg-gray-800 border-gray-700 text-white max-h-[300px]">
+                                                    <div className="px-2 py-1.5">
+                                                        <Input
+                                                            placeholder="Search courses..."
+                                                            className="bg-gray-700 border-gray-600 text-white h-8"
+                                                            onChange={(e) => {
+                                                                // This doesn't actually filter the dropdown items, but in a real implementation
+                                                                // you would filter the courses array based on this input
+                                                                console.log("Searching for:", e.target.value)
+                                                            }}
+                                                        />
+                                                    </div>
+                                                    <Separator className="my-1 bg-gray-700" />
+                                                    {courses.length === 0 ? (
+                                                        <SelectItem value="empty" disabled className="text-gray-500">
+                                                            No courses available
+                                                        </SelectItem>
+                                                    ) : (
+                                                        courses.map((course) => (
+                                                            <SelectItem
+                                                                key={course.id}
+                                                                value={course.id}
+                                                                className="hover:bg-gray-700 focus:bg-gray-700"
+                                                            >
+                                                                <div className="flex flex-col">
+                                                                    <span className="font-medium">{course.name}</span>
+                                                                    <span className="text-xs text-gray-400">{course.courseCode}</span>
+                                                                </div>
+                                                            </SelectItem>
+                                                        ))
+                                                    )}
+                                                </SelectContent>
+                                            </Select>
                                         )}
                                     />
+                                    {errors.courseId && <p className="text-rose-500 text-sm">{errors.courseId.message}</p>}
+                                </div>
+
+                                {/* Description */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="description" className="text-white">
+                                        Description <span className="text-rose-500">*</span>
+                                    </Label>
+                                    <Textarea
+                                        id="description"
+                                        {...register("description")}
+                                        placeholder="Brief description of the quiz"
+                                        rows={3}
+                                        className={`bg-gray-800 border-gray-700 text-white resize-none ${errors.description ? "border-rose-500" : ""
+                                            }`}
+                                    />
+                                    {errors.description && <p className="text-rose-500 text-sm">{errors.description.message}</p>}
                                 </div>
                             </CardContent>
                         </Card>
+
+                        <Card className="bg-gray-800/50 border-gray-700">
+                            <CardHeader className="pb-3">
+                                <CardTitle className="text-lg text-white flex items-center gap-2">
+                                    <Clock className="h-5 w-5 text-indigo-400" />
+                                    Quiz Settings
+                                </CardTitle>
+                                <CardDescription>Configure the quiz parameters</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Tabs defaultValue="timing" className="w-full">
+                                    <TabsList className="grid grid-cols-3 bg-gray-700/50">
+                                        <TabsTrigger value="timing" className="data-[state=active]:bg-indigo-600">
+                                            Timing
+                                        </TabsTrigger>
+                                        <TabsTrigger value="grading" className="data-[state=active]:bg-indigo-600">
+                                            Grading
+                                        </TabsTrigger>
+                                        <TabsTrigger value="access" className="data-[state=active]:bg-indigo-600">
+                                            Access
+                                        </TabsTrigger>
+                                    </TabsList>
+
+                                    <TabsContent value="timing" className="pt-4 space-y-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            {/* Duration */}
+                                            <div className="space-y-2">
+                                                <Label htmlFor="duration" className="flex items-center gap-2 text-white">
+                                                    <Clock className="h-4 w-4 text-indigo-400" /> Duration (mins){" "}
+                                                    <span className="text-rose-500">*</span>
+                                                </Label>
+                                                <Input
+                                                    id="duration"
+                                                    type="number"
+                                                    {...register("duration", { valueAsNumber: true })}
+                                                    min="1"
+                                                    max="300"
+                                                    className={`bg-gray-800 border-gray-700 text-white ${errors.duration ? "border-rose-500" : ""}`}
+                                                />
+                                                {errors.duration && <p className="text-rose-500 text-sm">{errors.duration.message}</p>}
+                                            </div>
+
+                                            {/* Start Date */}
+                                            <div className="space-y-2">
+                                                <Label htmlFor="startDate" className="flex items-center gap-2 text-white">
+                                                    <Calendar className="h-4 w-4 text-indigo-400" /> Start Date
+                                                </Label>
+                                                <Controller
+                                                    name="startDate"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <Input
+                                                            id="startDate"
+                                                            type="datetime-local"
+                                                            value={field.value ? new Date(field.value).toISOString().slice(0, 16) : ""}
+                                                            onChange={(e) => {
+                                                                const date = e.target.value ? new Date(e.target.value) : null
+                                                                field.onChange(date)
+                                                            }}
+                                                            className="bg-gray-800 border-gray-700 text-white"
+                                                        />
+                                                    )}
+                                                />
+                                            </div>
+
+                                            {/* End Date */}
+                                            <div className="space-y-2">
+                                                <Label htmlFor="endDate" className="flex items-center gap-2 text-white">
+                                                    <Calendar className="h-4 w-4 text-indigo-400" /> End Date
+                                                </Label>
+                                                <Controller
+                                                    name="endDate"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <Input
+                                                            id="endDate"
+                                                            type="datetime-local"
+                                                            value={field.value ? new Date(field.value).toISOString().slice(0, 16) : ""}
+                                                            onChange={(e) => {
+                                                                const date = e.target.value ? new Date(e.target.value) : null
+                                                                field.onChange(date)
+                                                            }}
+                                                            className="bg-gray-800 border-gray-700 text-white"
+                                                        />
+                                                    )}
+                                                />
+                                            </div>
+                                        </div>
+                                    </TabsContent>
+
+                                    <TabsContent value="grading" className="pt-4 space-y-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {/* Passing Marks */}
+                                            <div className="space-y-2">
+                                                <Label htmlFor="passingMarks" className="flex items-center gap-2 text-white">
+                                                    <Award className="h-4 w-4 text-indigo-400" /> Passing Marks (%)
+                                                </Label>
+                                                <Input
+                                                    id="passingMarks"
+                                                    type="number"
+                                                    {...register("passingMarks", { valueAsNumber: true })}
+                                                    min="0"
+                                                    max="100"
+                                                    className={`bg-gray-800 border-gray-700 text-white ${errors.passingMarks ? "border-rose-500" : ""}`}
+                                                />
+                                                {errors.passingMarks && <p className="text-rose-500 text-sm">{errors.passingMarks.message}</p>}
+                                            </div>
+
+                                            {/* Max Attempts */}
+                                            <div className="space-y-2">
+                                                <Label htmlFor="MaxAttempts" className="flex items-center gap-2 text-white">
+                                                    <Hash className="h-4 w-4 text-indigo-400" /> Max Attempts
+                                                </Label>
+                                                <TooltipProvider>
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <Input
+                                                                id="MaxAttempts"
+                                                                type="number"
+                                                                {...register("MaxAttempts", { valueAsNumber: true })}
+                                                                min="0"
+                                                                placeholder="0 = unlimited"
+                                                                className="bg-gray-800 border-gray-700 text-white"
+                                                            />
+                                                        </TooltipTrigger>
+                                                        <TooltipContent className="bg-gray-800 border-gray-700 text-white">
+                                                            <p>Set to 0 for unlimited attempts</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                </TooltipProvider>
+                                            </div>
+                                        </div>
+                                    </TabsContent>
+
+                                    <TabsContent value="access" className="pt-4 space-y-4">
+                                        {/* Active Toggle */}
+                                        <div className="flex items-center space-x-2">
+                                            <Controller
+                                                name="isActive"
+                                                control={control}
+                                                render={({ field }) => (
+                                                    <Checkbox
+                                                        id="isActive"
+                                                        checked={field.value}
+                                                        onCheckedChange={field.onChange}
+                                                        className="h-5 w-5 border-gray-600 data-[state=checked]:bg-indigo-600"
+                                                    />
+                                                )}
+                                            />
+                                            <Label htmlFor="isActive" className="text-white cursor-pointer">
+                                                Make this quiz active and available to students
+                                            </Label>
+                                        </div>
+
+                                        {/* Creator ID (hidden) */}
+                                        <div className="hidden">
+                                            <Input id="creatorId" {...register("creatorId")} defaultValue={user?.id || ""} />
+                                        </div>
+                                    </TabsContent>
+                                </Tabs>
+                            </CardContent>
+                        </Card>
+
+                        {/* Course Preview */}
+                        {selectedCourse && (
+                            <Card className="bg-indigo-900/20 border-indigo-500/30">
+                                <CardHeader className="pb-2">
+                                    <CardTitle className="text-sm text-white flex items-center gap-2">Selected Course</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="flex items-center gap-3">
+                                        <div className="bg-indigo-500/20 p-3 rounded-full">
+                                            <BookOpen className="h-5 w-5 text-indigo-400" />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-medium text-white">{selectedCourse.name}</h3>
+                                            <p className="text-sm text-gray-400">{selectedCourse.courseCode}</p>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )}
                     </div>
 
                     {/* Step 2: Questions */}
-                    <div className={currentStep !== 2 ? "hidden" : "space-y-4"}>
+                    <div className={currentStep !== 2 ? "hidden" : "space-y-6"}>
                         {/* Summary */}
-                        <Card className="bg-indigo-500/10 border-indigo-500/30">
-                            <CardContent className="p-4">
-                                <div className="flex flex-wrap gap-2 justify-between items-center">
-                                    <h3 className="font-medium text-white">{watch("title") || "Untitled Quiz"}</h3>
-                                    <div className="flex gap-2">
-                                        <Badge variant="outline" className="flex items-center gap-1 bg-gray-800/50 border-gray-700 text-indigo-400">
-                                            <Clock className="h-3 w-3" /> {watch("timeLimit")} min
-                                        </Badge>
-                                        <Badge variant="outline" className="flex items-center gap-1 bg-gray-800/50 border-gray-700 text-indigo-400">
-                                            <AlertCircle className="h-3 w-3" /> {fields.length} questions
-                                        </Badge>
-                                        <Badge variant="outline" className="flex items-center gap-1 bg-gray-800/50 border-gray-700 text-indigo-400">
-                                            <Award className="h-3 w-3" /> {totalPoints} points
-                                        </Badge>
-                                    </div>
+                        <Card className="bg-indigo-900/20 border-indigo-500/30">
+                            <CardHeader className="pb-2">
+                                <CardTitle className="text-lg text-white">{watch("title") || "Untitled Quiz"}</CardTitle>
+                                {selectedCourse && (
+                                    <CardDescription>
+                                        {selectedCourse.courseCode} - {selectedCourse.name}
+                                    </CardDescription>
+                                )}
+                            </CardHeader>
+                            <CardContent className="pb-4">
+                                <div className="flex flex-wrap gap-3">
+                                    <Badge
+                                        variant="outline"
+                                        className="flex items-center gap-1 bg-gray-800/50 border-gray-700 text-indigo-400"
+                                    >
+                                        <Clock className="h-3 w-3" /> {watch("duration")} min
+                                    </Badge>
+                                    <Badge
+                                        variant="outline"
+                                        className="flex items-center gap-1 bg-gray-800/50 border-gray-700 text-indigo-400"
+                                    >
+                                        <AlertCircle className="h-3 w-3" /> {fields.length} questions
+                                    </Badge>
+                                    <Badge
+                                        variant="outline"
+                                        className="flex items-center gap-1 bg-gray-800/50 border-gray-700 text-indigo-400"
+                                    >
+                                        <Award className="h-3 w-3" /> {totalMarks} points
+                                    </Badge>
+                                    <Badge
+                                        variant="outline"
+                                        className="flex items-center gap-1 bg-gray-800/50 border-gray-700 text-indigo-400"
+                                    >
+                                        <Hash className="h-3 w-3" /> {watch("passingMarks")}% passing
+                                    </Badge>
                                 </div>
                             </CardContent>
                         </Card>
@@ -443,7 +586,7 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
                                 type="button"
                                 variant="outline"
                                 className="flex-col h-24 gap-2 bg-gray-800/50 text-gray-400 border-gray-700 hover:bg-indigo-500/20 hover:border-indigo-500/30"
-                                onClick={() => addQuestion("MULTIPLE_CHOICE")}
+                                onClick={() => addQuestion(QuestionType.MULTIPLE_CHOICE)}
                             >
                                 <AlertCircle className="h-5 w-5 text-indigo-400" />
                                 Multiple Choice
@@ -452,7 +595,7 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
                                 type="button"
                                 variant="outline"
                                 className="flex-col h-24 gap-2 bg-gray-800/50 text-gray-400 border-gray-700 hover:bg-indigo-500/20 hover:border-indigo-500/30"
-                                onClick={() => addQuestion("TRUE_FALSE")}
+                                onClick={() => addQuestion(QuestionType.TRUE_FALSE)}
                             >
                                 <AlertCircle className="h-5 w-5 text-indigo-400" />
                                 True/False
@@ -461,7 +604,7 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
                                 type="button"
                                 variant="outline"
                                 className="flex-col h-24 gap-2 bg-gray-800/50 text-gray-400 border-gray-700 hover:bg-indigo-500/20 hover:border-indigo-500/30"
-                                onClick={() => addQuestion("SHORT_ANSWER")}
+                                onClick={() => addQuestion(QuestionType.SHORT_ANSWER)}
                             >
                                 <AlertCircle className="h-5 w-5 text-indigo-400" />
                                 Short Answer
@@ -470,21 +613,30 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
 
                         {/* Questions List */}
                         {fields.length === 0 ? (
-                            <div className="text-center py-8 text-gray-400 border border-dashed border-gray-600 rounded-lg">
-                                No questions added yet. Select a question type above.
+                            <div className="text-center py-12 text-gray-400 border border-dashed border-gray-600 rounded-lg">
+                                <HelpCircle className="h-12 w-12 mx-auto mb-4 text-gray-600" />
+                                <h3 className="text-lg font-medium text-gray-300 mb-2">No questions added yet</h3>
+                                <p className="text-sm max-w-md mx-auto mb-4">
+                                    Select a question type above to start building your quiz
+                                </p>
                             </div>
                         ) : (
-                            <ScrollArea className="h-[350px]">
+                            <ScrollArea className="h-[400px]">
                                 <div className="space-y-6">
                                     {fields.map((question, qIndex) => (
                                         <Card key={question.id} className="overflow-hidden bg-gray-800/50 border-gray-700">
-                                            <div className="bg-gray-700/50 px-4 py-2 flex justify-between items-center">
-                                                <h4 className="font-medium flex items-center gap-2 text-white">
-                                                    Question {qIndex + 1}
-                                                    <Badge variant="outline" className="bg-gray-800/50 border-gray-700 text-indigo-400">
-                                                        {question.type.replace("_", " ").toLowerCase()}
+                                            <CardHeader className="bg-gray-700/50 py-3 px-4 flex flex-row justify-between items-center space-y-0">
+                                                <div className="flex items-center gap-2">
+                                                    <Badge variant="outline" className="bg-gray-800/50 border-gray-700 text-white">
+                                                        Q{qIndex + 1}
                                                     </Badge>
-                                                </h4>
+                                                    <Badge variant="outline" className="bg-indigo-500/20 border-indigo-500/30 text-indigo-400">
+                                                        {question.type.replace("_", " ")}
+                                                    </Badge>
+                                                    <Badge variant="outline" className="bg-amber-500/20 border-amber-500/30 text-amber-400">
+                                                        {question.marks} {question.marks === 1 ? "point" : "points"}
+                                                    </Badge>
+                                                </div>
                                                 <Button
                                                     type="button"
                                                     variant="ghost"
@@ -494,7 +646,7 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
                                                 >
                                                     <Trash2 size={16} />
                                                 </Button>
-                                            </div>
+                                            </CardHeader>
                                             <CardContent className="p-4 space-y-4">
                                                 {/* Question Text */}
                                                 <div className="space-y-2">
@@ -503,101 +655,138 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
                                                     </Label>
                                                     <Input
                                                         id={`question-${qIndex}`}
-                                                        {...register(`questions.${qIndex}.text`)}
-                                                        defaultValue={isEdit ? question.text : ""}
-                                                        className={`bg-gray-800 border-gray-700 text-white ${errors.questions?.[qIndex]?.text ? "border-rose-500" : ""
+                                                        {...register(`questions.${qIndex}.questionText`)}
+                                                        className={`bg-gray-800 border-gray-700 text-white ${errors.questions?.[qIndex]?.questionText ? "border-rose-500" : ""
                                                             }`}
                                                     />
-                                                    {errors.questions?.[qIndex]?.text && (
-                                                        <p className="text-rose-500 text-sm">{errors.questions[qIndex]?.text?.message}</p>
+                                                    {errors.questions?.[qIndex]?.questionText && (
+                                                        <p className="text-rose-500 text-sm">{errors.questions[qIndex]?.questionText?.message}</p>
                                                     )}
                                                 </div>
 
-                                                {/* Question Points */}
-                                                <div className="grid grid-cols-2 gap-4">
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    {/* Question Marks */}
                                                     <div className="space-y-2">
-                                                        <Label htmlFor={`points-${qIndex}`} className="text-white">
-                                                            Points <span className="text-rose-500">*</span>
+                                                        <Label htmlFor={`marks-${qIndex}`} className="text-white">
+                                                            Marks <span className="text-rose-500">*</span>
                                                         </Label>
                                                         <Input
-                                                            id={`points-${qIndex}`}
+                                                            id={`marks-${qIndex}`}
                                                             type="number"
-                                                            {...register(`questions.${qIndex}.points`, { valueAsNumber: true })}
-                                                            defaultValue={isEdit ? question.points : 1}
+                                                            {...register(`questions.${qIndex}.marks`, { valueAsNumber: true })}
                                                             min="1"
+                                                            className={`bg-gray-800 border-gray-700 text-white ${errors.questions?.[qIndex]?.marks ? "border-rose-500" : ""
+                                                                }`}
+                                                        />
+                                                        {errors.questions?.[qIndex]?.marks && (
+                                                            <p className="text-rose-500 text-sm">{errors.questions[qIndex]?.marks?.message}</p>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Optional: Hint */}
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor={`hint-${qIndex}`} className="text-white">
+                                                            Hint (Optional)
+                                                        </Label>
+                                                        <Input
+                                                            id={`hint-${qIndex}`}
+                                                            {...register(`questions.${qIndex}.hint`)}
                                                             className="bg-gray-800 border-gray-700 text-white"
                                                         />
                                                     </div>
                                                 </div>
 
                                                 {/* Options (for multiple choice/true-false) */}
-                                                {(question.type === "MULTIPLE_CHOICE" || question.type === "TRUE_FALSE") && (
-                                                    <div className="space-y-3">
-                                                        <Label className="text-white">
-                                                            Options <span className="text-rose-500">*</span>
-                                                        </Label>
-                                                        {question.options.map((option, oIndex) => (
-                                                            <div key={oIndex} className="flex items-center gap-3">
-                                                                <input
-                                                                    type="radio"
-                                                                    id={`option-${qIndex}-${oIndex}`}
-                                                                    {...register(`questions.${qIndex}.correctAnswer`)}
-                                                                    value={oIndex}
-                                                                    defaultChecked={isEdit && question.correctAnswer === oIndex}
-                                                                    className="h-4 w-4 text-indigo-600"
-                                                                />
-                                                                <Input
-                                                                    {...register(`questions.${qIndex}.options.${oIndex}`)}
-                                                                    defaultValue={isEdit ? option : ""}
-                                                                    className={`bg-gray-800 border-gray-700 text-white ${errors.questions?.[qIndex]?.options?.[oIndex] ? "border-rose-500" : ""
-                                                                        }`}
-                                                                    placeholder={`Option ${oIndex + 1}`}
-                                                                />
-                                                                {question.type === "MULTIPLE_CHOICE" && question.options.length > 2 && (
-                                                                    <Button
-                                                                        type="button"
-                                                                        variant="ghost"
-                                                                        size="sm"
-                                                                        className="text-rose-400 hover:text-rose-300 hover:bg-rose-500/10"
-                                                                        onClick={() => removeOption(qIndex, oIndex)}
-                                                                    >
-                                                                        <Trash2 size={14} />
-                                                                    </Button>
-                                                                )}
-                                                            </div>
-                                                        ))}
-                                                        {question.type === "MULTIPLE_CHOICE" && (
-                                                            <Button
-                                                                type="button"
-                                                                variant="outline"
-                                                                size="sm"
-                                                                className="mt-2 bg-gray-800/50 border-gray-700 text-indigo-400 hover:bg-indigo-500/20 hover:border-indigo-500/30"
-                                                                onClick={() => addOption(qIndex)}
-                                                            >
-                                                                <Plus size={14} className="mr-2" />
-                                                                Add Option
-                                                            </Button>
-                                                        )}
-                                                    </div>
-                                                )}
+                                                {(question.type === QuestionType.MULTIPLE_CHOICE ||
+                                                    question.type === QuestionType.TRUE_FALSE) && (
+                                                        <div className="space-y-3">
+                                                            <Label className="text-white">
+                                                                Options <span className="text-rose-500">*</span>
+                                                            </Label>
+                                                            {question.answers.map((answer, aIndex) => (
+                                                                <div key={aIndex} className="flex items-center gap-3">
+                                                                    <Controller
+                                                                        name={`questions.${qIndex}.correctAnswerIndex`}
+                                                                        control={control}
+                                                                        render={({ field }) => (
+                                                                            <input
+                                                                                type="radio"
+                                                                                id={`option-${qIndex}-${aIndex}`}
+                                                                                checked={Number(field.value) === aIndex}
+                                                                                onChange={() => field.onChange(aIndex)}
+                                                                                className="h-4 w-4 text-indigo-600"
+                                                                            />
+                                                                        )}
+                                                                    />
+                                                                    <Input
+                                                                        {...register(`questions.${qIndex}.answers.${aIndex}`)}
+                                                                        className={`bg-gray-800 border-gray-700 text-white ${errors.questions?.[qIndex]?.answers?.[aIndex] ? "border-rose-500" : ""
+                                                                            }`}
+                                                                        placeholder={`Option ${aIndex + 1}`}
+                                                                    />
+                                                                    {question.type === QuestionType.MULTIPLE_CHOICE && question.answers.length > 2 && (
+                                                                        <Button
+                                                                            type="button"
+                                                                            variant="ghost"
+                                                                            size="sm"
+                                                                            className="text-rose-400 hover:text-rose-300 hover:bg-rose-500/10"
+                                                                            onClick={() => removeOption(qIndex, aIndex)}
+                                                                        >
+                                                                            <Trash2 size={14} />
+                                                                        </Button>
+                                                                    )}
+                                                                </div>
+                                                            ))}
+                                                            {question.type === QuestionType.MULTIPLE_CHOICE && (
+                                                                <Button
+                                                                    type="button"
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    className="mt-2 bg-gray-800/50 border-gray-700 text-indigo-400 hover:bg-indigo-500/20 hover:border-indigo-500/30"
+                                                                    onClick={() => addOption(qIndex)}
+                                                                >
+                                                                    <Plus size={14} className="mr-2" />
+                                                                    Add Option
+                                                                </Button>
+                                                            )}
+                                                        </div>
+                                                    )}
 
                                                 {/* Short Answer */}
-                                                {question.type === "SHORT_ANSWER" && (
+                                                {question.type === QuestionType.SHORT_ANSWER && (
                                                     <div className="space-y-2">
                                                         <Label htmlFor={`answer-${qIndex}`} className="text-white">
                                                             Correct Answer <span className="text-rose-500">*</span>
                                                         </Label>
                                                         <Input
                                                             id={`answer-${qIndex}`}
-                                                            {...register(`questions.${qIndex}.options.0`)}
-                                                            defaultValue={isEdit ? question.textAnswer : "no answer"}
+                                                            {...register(`questions.${qIndex}.answers.0`)}
                                                             placeholder="Enter the correct answer"
-                                                            className="bg-gray-800 border-gray-700 text-white"
+                                                            className={`bg-gray-800 border-gray-700 text-white ${errors.questions?.[qIndex]?.answers?.[0] ? "border-rose-500" : ""
+                                                                }`}
+                                                        />
+                                                        <Controller
+                                                            name={`questions.${qIndex}.correctAnswerIndex`}
+                                                            control={control}
+                                                            defaultValue="0"
+                                                            render={({ field }) => <input type="hidden" {...field} value="0" />}
                                                         />
                                                     </div>
                                                 )}
 
-                                                <input type="hidden" name={`questions.${qIndex}.type`} value={question.type} />
+                                                {/* Explanation (Optional) */}
+                                                <div className="space-y-2">
+                                                    <Label htmlFor={`explanation-${qIndex}`} className="text-white">
+                                                        Explanation (Optional)
+                                                    </Label>
+                                                    <Textarea
+                                                        id={`explanation-${qIndex}`}
+                                                        {...register(`questions.${qIndex}.explanation`)}
+                                                        placeholder="Explain why this answer is correct"
+                                                        className="bg-gray-800 border-gray-700 text-white resize-none"
+                                                        rows={2}
+                                                    />
+                                                </div>
                                             </CardContent>
                                         </Card>
                                     ))}
@@ -607,7 +796,8 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
                     </div>
 
                     {/* Form Navigation */}
-                    <div className="flex justify-between pt-4 border-t border-gray-700">
+                    <Separator className="bg-gray-700" />
+                    <div className="flex justify-between">
                         {currentStep === 2 ? (
                             <Button
                                 type="button"
@@ -662,3 +852,4 @@ export function QuizForm({ subjects, defaultValues, isEdit = false, onSuccess }:
         </Dialog>
     )
 }
+

@@ -26,9 +26,13 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'd3moma7wl9.ufs.sh',
         pathname: '/f/**',
-      }
+      },
+      {
+        protocol: "https",
+        hostname: "images.pexels.com",
+        pathname: "/**",
+      },
     ],
-    domains: ['images.pexels.com'],
   },
 };
 

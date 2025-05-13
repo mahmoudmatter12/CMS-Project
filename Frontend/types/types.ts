@@ -24,10 +24,10 @@ export enum UserRole {
   Student = "Student",
   Admin = "Admin",
   SuperAdmin = "SuperAdmin",
-  Teacher = "Teacher",  
+  Teacher = "Teacher",
 }
 
-export interface Course{
+export interface Course {
   id: string;
   name: string;
   creditHours: number;
@@ -55,48 +55,38 @@ export interface Department {
   id: string;
   name: string;
 }
-
 export interface Quiz {
   id: string;
   title: string;
   description: string;
-  subjectId: string;
-  subjectName: string;
-  dueDate: Date | null;
-  isPublished: boolean;
+  duration: number;
+  passingMarks: number;
+  isActive: boolean;
+  startDate: Date | null;
+  endDate: Date | null;
+  totalMarks: number;
+  totalQuestions: number;
+  creatorName: string;
+  courseName: string;
+  myProperty?: number; // Optional property
   questions: Question[];
-  createdBy: User;
-
+  MaxAttempts: number;
 }
 
-// {
-//   "title": "test",
-//   "description": "test",
-//   "startDate": "2025-05-12T22:12:43.251Z",
-//   "endDate": "2025-05-12T22:12:43.251Z",
-//   "duration": 10,
-//   "passingMarks": 10,
-//   "isActive": true,
-//   "maxAttempts": 0,
-//   "questions": [
-//     {
-//       "questionText": "string",
-//       "type": 0,
-//       "answers": [
-//         "string"
-//       ],
-//       "marks": 0,
-//       "correctAnswerIndex": 0,
-//       "hint": "string",
-//       "explanation": "string",
-//       "imageUrl": "string",
-//       "tags": [
-//         "string"
-//       ]
-//     }
-//   ]
-// }
+export interface Question {
+  questionText: string;
+  type: QuestionType;
+  answers: string[];
+  correctAnswerIndex: number | string;
+  marks: number;
+  hint?: string;
+  explanation?: string;
+  imageUrl?: string;
+  tags?: string[];
+}
 
-// export interface Course{
-  
-// }
+export enum QuestionType {
+  MULTIPLE_CHOICE = "MULTIPLE_CHOICE",
+  TRUE_FALSE = "TRUE_FALSE",
+  SHORT_ANSWER = "SHORT_ANSWER",
+}

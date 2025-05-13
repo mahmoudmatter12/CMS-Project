@@ -1,5 +1,6 @@
 using CollageMangmentSystem.Core.DTO.Requests.quiz;
 using CollageMangmentSystem.Core.Entities;
+using CollageMangmentSystem.Core.Entities.course;
 
 namespace Core.Entities.Quizzes
 {
@@ -20,6 +21,10 @@ namespace Core.Entities.Quizzes
         public Guid? CreatorId { get; set; } // FK to User
         public User? Creator { get; set; }   // Navigation property
         public ICollection<QuizQuestion> Questions { get; set; } = new List<QuizQuestion>();
+        // each quiz is for only one course 
+        // each course can have multiple quizzes
+        public Guid? CourseId { get; set; } // FK to Course
+        public Course? Course { get; set; } // Navigation property
 
         public string GetDurationString()
         {

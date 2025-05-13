@@ -56,11 +56,6 @@ export function getTimeRemaining(deadlineString: string): string {
   }
 }
 
-// Get user's full name
-export function getFullName(firstName: string, lastName: string): string {
-  return `${firstName} ${lastName}`
-}
-
 // Calculate GPA color based on value
 export function getGpaColor(gpa: number): string {
   if (gpa >= 3.5) return "text-green-500"
@@ -78,3 +73,42 @@ export function getInitials(name: string): string {
     .toUpperCase()
 }
 
+
+export function getQuizType(type: number): string {
+  switch (type) {
+    case 0:
+      return "True/False"
+    case 1:
+      return "Multiple Choice"
+    case 2:
+      return "Short Answer"
+    default:
+      return "Unknown Type"
+  }
+}
+
+// calc the dueDate by the start date and the end date
+export function calcDueDate(startDateString: Date, endDateString: Date): string {
+  const startDate = new Date(startDateString)
+  const endDate = new Date(endDateString)
+
+  if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+    return "Invalid date"
+  }
+
+  const diffMs = endDate.getTime() - startDate.getTime()
+
+  if (diffMs < 0) {
+    return "End date is before start date"
+  }
+
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+  const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+  const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))
+
+  const daysPart = diffDays > 0 ? `${diffDays} day${diffDays > 1 ? "s" : ""}` : ""
+  const hoursPart = diffHours > 0 ? `${diffHours} hour${diffHours > 1 ? "s" : ""}` : ""
+  const minutesPart = diffMinutes > 0 ? `${diffMinutes} minute${diffMinutes > 1 ? "s" : ""}` : ""
+
+  return [daysPart, hoursPart, minutesPart].filter(Boolean).join(", ")
+}
