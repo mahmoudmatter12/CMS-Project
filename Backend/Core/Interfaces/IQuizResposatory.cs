@@ -10,13 +10,15 @@ namespace CollageManagementSystem.Core
         Task AddQuizAsync(Quiz quiz);
         Task UpdateQuizAsync(Quiz quiz);
         Task DeleteQuizAsync(Guid id);
-        Task<IEnumerable<Quiz>> GetActiveQuizzesAsync();
+        Task<IEnumerable<QuizWithQuestionsResponseDto>> GetActiveQuizzesAsync();
 
         Task<IEnumerable<QuizQuestion>> GetAllQuestionsAsync(Guid QuizID);
 
         Task<IEnumerable<QuizWithQuestionsResponseDto>> GetQuizWithQuestionsAsync(Guid quizId);
 
         Task<IEnumerable<QuizWithQuestionsResponseDto>> GetQuizzesWithQuestionsAsync();
+
+        Task<QuizResultDto> CheckAnsweringQuizAsync(QuizSubmissionDto submission);
     }
 
 }

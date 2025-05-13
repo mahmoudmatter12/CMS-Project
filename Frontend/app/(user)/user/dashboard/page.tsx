@@ -1,13 +1,41 @@
-import React from 'react'
+import ActionsSection from "@/components/userDashboard/ActionsSection";
+import Blogs from "@/components/userDashboard/Blogs";
+import ImportantFormsSection from "@/components/userDashboard/ImportantFormsSection";
+import NotificationsCenter from "@/components/userDashboard/NotificationsCenter";
+import TrackingSection from "@/components/userDashboard/TrackingSection";
+import UserDashBoardHeroSection from "@/components/userDashboard/UserDashBoardHeroSection";
 
-function Dashboard() {
+export default function DashboardPage() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
-      <h1 className="text-4xl font-bold">User Dashboard</h1>
-      <p className="mt-4 text-lg">This is the user Dashboard page.</p>
-      {/* Add more profile details here */}
-    </div>
-  )
-}
+    <div className="min-h-screen p-4 md:p-8">
+      {/* Welcome Header */}
 
-export default Dashboard
+      <UserDashBoardHeroSection />
+
+
+     
+      <hr className="my-8 border-white " />
+      <TrackingSection />
+
+      <ImportantFormsSection />
+      <hr className="my-8 border-white " />
+
+
+      {/* Trending colorFULL Blogs Cards */}
+      <Blogs />
+      <hr className="my-8 border-white " />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Recent Notifications */}
+        <NotificationsCenter />
+        {/* Recent Activity */}
+        {/* <RecentActivity /> */}
+      </div>
+
+      {/* All Features */}
+      <ActionsSection />
+
+
+    </div>
+  );
+}
