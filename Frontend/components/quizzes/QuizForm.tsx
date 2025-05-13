@@ -115,6 +115,8 @@ export function QuizForm({ courses, defaultValues, isEdit = false, onSuccess, ch
                 creatorId: user?.id || data.creatorId,
             }
 
+           
+
             const endpoint = isEdit ? `/api/quizzes/${defaultValues?.id}/update` : "http://localhost:5168/api/Quiz/create"
 
             console.log("Sending quiz data:", quizData)
@@ -185,7 +187,7 @@ export function QuizForm({ courses, defaultValues, isEdit = false, onSuccess, ch
     }
 
     // Calculate total marks for display
-    const totalMarks = fields.reduce((sum, field) => sum + (field.marks || 1), 0)
+    const totalMarks = fields.reduce((sum, field) => sum + (Number(field.marks) || 0), 0)
 
     // Check if step 1 is valid
     const isStep1Valid = !!watch("title") && !!watch("courseId") && watch("duration") > 0 && watch("passingMarks") > 0

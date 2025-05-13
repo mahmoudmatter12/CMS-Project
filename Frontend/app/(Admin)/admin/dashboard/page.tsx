@@ -1,5 +1,6 @@
 import ManagmentGrid from '@/components/admin/ManagmentGrid';
 import StudentsTable from '@/components/admin/student/StudentsTable';
+import DepartmentMainComp from '@/components/Department/DepartmentMainComp';
 import React from 'react'
 
 const Admin = () => {
@@ -15,6 +16,7 @@ const Admin = () => {
       <ManagmentGrid />
       {/* Statistics Based on CGPA */}
       {/* <CGPAPieChart /> Use the CGPA table component here */}
+      <DepartmentMainComp />
     </div>
   </div>
   )

@@ -112,6 +112,15 @@ namespace CollageManagementSystem
             return Ok(active);
         }
 
+        [HttpPost("CheckQuiz")]
+        public async Task<IActionResult> CheckQuiz([FromBody] QuizSubmissionDto submission)
+        {
+            var result = await _quizRepository.CheckAnsweringQuizAsync(submission);
+            if (result == null)
+                return NotFound("Quiz not found.");
+            return Ok(result);
+        }
+
         [HttpPut("{id}/ToggleActive")]
         public async Task<IActionResult> ActivateQuiz(Guid id)
         {
