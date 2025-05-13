@@ -40,6 +40,17 @@ export interface Course{
   courseCode: string;
 }
 
+export interface Event {
+  id: string;
+  title: string;
+  date: string;
+  location: string;
+  category: string;
+  attendees: number;
+  description: string;
+  coverImage: string;
+  images: string[];
+}
 export interface Department {
   id: string;
   name: string;
