@@ -1,5 +1,7 @@
 using CollageManagementSystem.Models;
+using CollageMangmentSystem.Core.DTO.Responses.course;
 using CollageMangmentSystem.Core.Entities;
+using CollageMangmentSystem.Core.Entities.course;
 using CollageMangmentSystem.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -156,5 +158,77 @@ namespace CollageManagementSystem.Services
             return user;
         }
 
+        public async Task<IEnumerable<CourseResponseDto>> GetCoursesUserCanEnroll(Guid userId)
+        {
+            // 1. Get user enrollment information - which courses the user is already enrolled in
+            var userEnrollments = await _context.UserEnrollments
+                .Where(e => e.UserId == userId)
+                .Select(e => e.CourseId)
+                .ToListAsync();
+
+            // 2. Get all available courses with their prerequisites
+            var allCourses = await _context.Courses
+                .Include(c => c.Department)
+                .Include(c => c.PrerequisiteCourses)
+                .Where(c => c.IsOpen)
+                .ToListAsync();
+
+            // 3. Filter the courses that the user is not enrolled in
+            var coursesNotEnrolled = allCourses
+                .Where(c => !userEnrollments.Contains(c.Id))
+                .ToList();
+
+            // 4. Get courses that user is already enrolled in for prerequisites checking
+            var enrolledCourses = allCourses
+                .Where(c => userEnrollments.Contains(c.Id))
+                .ToList();
+
+            // 5. Filter courses that the user can enroll in:
+            // - User is not already enrolled
+            // - Course has no prerequisites OR
+            // - User has completed all prerequisites
+            var eligibleCourses = coursesNotEnrolled
+                .Where(course =>
+                    // No prerequisites
+                    course.PrerequisiteCourseIds.Count == 0 ||
+                    // All prerequisites are satisfied
+                    course.PrerequisiteCourseIds.All(prereqId => userEnrollments.Contains(prereqId))
+                )
+                .ToList();
+
+            // 6. Convert to DTOs and return
+            var courseDtos = eligibleCourses.Select(c => new CourseResponseDto
+            {
+                Id = c.Id,
+                Name = c.Name,
+                CreditHours = c.CreditHours,
+                Semester = c.Semester,
+                IsOpen = c.IsOpen,
+                DepartmentId = c.DepartmentId,
+                DepName = c.Department?.Name,
+                PrerequisiteCourseIds = c.PrerequisiteCourseIds,
+                CourseCode = c.CourseCode
+            }).ToList();
+
+            foreach (var courseDto in courseDtos)
+            {
+                courseDto.PrerequisiteCourses = await GetPrerequisiteCoursesNames(courseDto.PrerequisiteCourseIds);;
+            }
+            return courseDtos;
+        }
+
+        public Task<User?> GetUserByStudentId(string studentCollageId)
+        {
+            throw new NotImplementedException();
+        }
+
+        private Task<List<string>> GetPrerequisiteCoursesNames(List<Guid> prerequisiteCourseIds)
+        {
+            return _context.Courses
+                .Where(c => prerequisiteCourseIds.Contains(c.Id))
+                .Select(c => c.Name)
+                .ToListAsync();
+        }
+        
     }
 }

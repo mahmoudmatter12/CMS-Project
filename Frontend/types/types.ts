@@ -29,15 +29,15 @@ export enum UserRole {
 
 export interface Course {
   id: string;
+  courseCode: string;
   name: string;
   creditHours: number;
   semester: number;
   isOpen: boolean;
   depName: string;
   departmentId: string;
-  prerequisiteCourses: string[];
   prerequisiteCourseIds: string[];
-  courseCode: string;
+  prerequisiteCourseNames: string[];
 }
 
 export interface Event {
@@ -89,4 +89,48 @@ export enum QuestionType {
   MULTIPLE_CHOICE = "MULTIPLE_CHOICE",
   TRUE_FALSE = "TRUE_FALSE",
   SHORT_ANSWER = "SHORT_ANSWER",
+}
+
+
+export interface UserEnrollmentsResponse {
+  message: string;
+  userName: string;
+  enrollments: UserEnrollment[];
+}
+
+	
+export interface UserEnrollment {
+  id: string;
+  courseId: string;
+  courseName: string;
+  enrollDate: Date;
+  enrollmentId: string;
+}
+export interface Enrollment {
+  enrollmentId: string
+  courseId: string
+  courseName: string
+  enrollDate: string
+}
+
+export interface EnrollmentsResponse {
+  message: string
+  userName: string
+  enrollments: Enrollment[]
+}
+
+export interface EnrollmentsResponse {
+  message: string
+  userName: string
+  enrollments: Enrollment[]
+}
+
+export interface EnrollmentRequest {
+  userId: string
+  courseId: string
+}
+
+export interface EnrollmentResponse {
+  message: string
+  success: boolean
 }

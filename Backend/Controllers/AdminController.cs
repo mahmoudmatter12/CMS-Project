@@ -221,7 +221,7 @@ namespace CollageMangmentSystem.Core.DTO.Requests.Admin
         }
 
         [HttpPost("course/create")]
-        public async Task<courseResponseDto> CreateCourse([FromBody] CreateCourseReqDto course)
+        public async Task<CourseResponseDto> CreateCourse([FromBody] CreateCourseReqDto course)
         {
             try
             {
@@ -230,7 +230,8 @@ namespace CollageMangmentSystem.Core.DTO.Requests.Admin
                 {
                     throw new Exception("Failed to create the course. The result is null.");
                 }
-                var createdCourseDto = new courseResponseDto{
+                var createdCourseDto = new CourseResponseDto
+                {
                     CourseCode = course.CourseCode,
                     CreditHours = course.CreditHours,
                     Name = course.Name

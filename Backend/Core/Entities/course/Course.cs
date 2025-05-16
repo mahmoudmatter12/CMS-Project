@@ -43,10 +43,10 @@ namespace CollageMangmentSystem.Core.Entities.course
             return dep.Name ?? string.Empty;
         }
 
-        public courseResponseDto ToCourseResponseDto()
+        public CourseResponseDto ToCourseResponseDto()
         {
             // Assuming you want to convert this Course entity to a courseResponseDto
-            var courseResponseDto = new courseResponseDto
+            var courseResponseDto = new CourseResponseDto
             {
                 Id = this.Id,
                 Name = this.Name,

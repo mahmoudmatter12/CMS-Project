@@ -52,7 +52,7 @@ async function TrackingSection() {
             title: "Enrolled Subjects",
             value: totalEnrolledSubjects || 0,
             description: totalEnrolledSubjects ? "Current enrollments" : "Not enrolled yet",
-            link: `/user/enrollments/${userData.id}`,
+            link: `/user/dashboard/enrollments/${userData.id}`,
             gradient: "from-cyan-400 to-sky-500",
             icon: (
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">

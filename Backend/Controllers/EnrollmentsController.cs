@@ -30,9 +30,9 @@ namespace CollageMangmentSystem.Controllers
         public async Task<IActionResult> GetUserEnrollments(Guid id)
         {
             var enrollments = await _userEnrollmentsService.GetUserEnrollmentsById(id);
-            if (enrollments == null || !enrollments.Any())
+            if (enrollments == null || enrollments.Count == 0)
             {
-                return NotFound(new { Message = "No enrollments found for this user." });
+                return NoContent();
             }
             return Ok(new
             {
@@ -112,28 +112,7 @@ namespace CollageMangmentSystem.Controllers
             }
         }
 
-        [HttpDelete("{id:guid}")]
-        [EnableRateLimiting("FixedWindowPolicy")]
-        public async Task<IActionResult> DeleteUserEnrollment(Guid id)
-        {
-            var enrollment = await _userEnrollmentsService.GetByIdAsync(id);
-            if (enrollment == null)
-            {
-                return NotFound(new { Message = "Enrollment not found" });
-            }
-
-            try
-            {
-                var userId = GetUserIdFromCookies();
-                await _userEnrollmentsService.SoftDeleteUserEnrollment(id, Guid.Parse(userId));
-                return Ok(new { Message = "Enrollment deleted successfully" });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error deleting user enrollment");
-                return StatusCode(500, new { Message = "An error occurred while processing your request" });
-            }
-        }
+      
 
         private string GetCourseName(Guid courseId)
         {
@@ -154,16 +133,6 @@ namespace CollageMangmentSystem.Controllers
                 throw new Exception("User not found");
             }
             return userName.Result;
-        }
-
-        private string GetUserIdFromCookies()
-        {
-            var userId = Request.Cookies["userId"];
-            if (string.IsNullOrEmpty(userId))
-            {
-                throw new UnauthorizedAccessException("User ID not found in cookies");
-            }
-            return userId;
         }
 
     }

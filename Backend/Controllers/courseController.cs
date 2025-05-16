@@ -28,58 +28,6 @@ namespace CollageMangmentSystem.Controllers
             _depRepo = depRepo;
         }
 
-        // [HttpGet("all")]
-        // [EnableRateLimiting("FixedWindowPolicy")]
-        // public async Task<IActionResult> GetAllCourses()
-        // {
-        //     var courses = await _CourseRepo.GetAllAsync();
-        //     var courseDtos = courses.Select(c => c.ToCourseResponseDto()).ToList();
-        //     foreach (var courseDto in courseDtos)
-        //     {
-        //         courseDto.DepName = await _depRepo.GetDepartmentName(courseDto.DepartmentId);
-        //         courseDto.PrerequisiteCourses = await _courseReposatory.GetCourseNamesByIds(courseDto.PrerequisiteCourseIds);
-        //     }
-        //     return Ok(courseDtos);
-        // }
-        // paged
-        // [HttpGet("all")]
-        // [EnableRateLimiting("FixedWindowPolicy")]
-        // public async Task<IActionResult> GetAllCourses([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
-        // {
-        //     var TotalCount = await _CourseRepo.GetCountAsync();
-        //     var courses = await _CourseRepo.GetAllAsyncPaged(pageNumber, pageSize);
-        //     var courseDtos = courses.Select(c => c.ToCourseResponseDto()).ToList();
-        //     foreach (var courseDto in courseDtos)
-        //     {
-        //         courseDto.DepName = await _depRepo.GetDepartmentName(courseDto.DepartmentId);
-        //         courseDto.PrerequisiteCourses = await _courseReposatory.GetCourseNamesByIds(courseDto.PrerequisiteCourseIds);
-        //     }
-        //     return Ok(new PagedResponse<courseResponseDto>
-        //     {
-        //         PageNumber = pageNumber,
-        //         PageSize = pageSize,
-        //         TotalCount = TotalCount,
-        //         TotalPages = (int)Math.Ceiling((double)TotalCount / pageSize),
-        //         Data = courseDtos
-        //     });
-        // }
-
-
-        // [HttpGet("{id:guid}")]
-        // [EnableRateLimiting("FixedWindowPolicy")]
-        // public async Task<IActionResult> GetCourseById(Guid id)
-        // {
-        //     var course = await _CourseRepo.GetByIdAsync(id);
-        //     if (course == null)
-        //     {
-        //         return NotFound("Course not found");
-        //     }
-        //     var courseDtos = course.ToCourseResponseDto();
-        //     courseDtos.DepName = await _depRepo.GetDepartmentName(courseDtos.DepartmentId);
-        //     courseDtos.PrerequisiteCourses = await _courseReposatory.GetCourseNamesByIds(courseDtos.PrerequisiteCourseIds);
-        //     return Ok(courseDtos);
-        // }
-
         [HttpPost("add")]
         [EnableRateLimiting("FixedWindowPolicy")]
         public async Task<IActionResult> CreateCourse([FromBody] CreateCourseReqDto course)
@@ -116,7 +64,7 @@ namespace CollageMangmentSystem.Controllers
 
             course.IsOpen = !course.IsOpen;
             await _CourseRepo.UpdateAsync(course);
-            var courseDtos = new courseResponseDto
+            var courseDtos = new CourseResponseDto
             {
                 Id = course.Id,
                 Name = course.Name,
@@ -128,34 +76,6 @@ namespace CollageMangmentSystem.Controllers
                 PrerequisiteCourses = course.PrerequisiteCoursesNames()
             };
             return Ok(courseDtos);
-        }
-
-        [HttpDelete("{id:guid}")]
-        [EnableRateLimiting("FixedWindowPolicy")]
-        public async Task<IActionResult> DeleteCourse(Guid id)
-        {
-            var course = await _CourseRepo.GetByIdAsync(id);
-            if (course == null)
-            {
-                return NotFound("Course not found");
-            }
-
-            // Get current user ID from the service
-            var currentUserId = _userService.GetUserIdFromClaims(User) ?? null;
-            if (currentUserId == null)
-            {
-                return Unauthorized("User ID not found in claims");
-            }
-            // Soft delete the course
-            await _CourseRepo.SoftDeleteAsync(course, currentUserId.Result); // This will trigger your soft delete logic
-
-            // Return appropriate response
-            return Ok(new
-            {
-                Message = "Course soft deleted successfully",
-                DeletedAt = DateTime.UtcNow,
-                DeletedBy = currentUserId.Result
-            });
         }
 
     }

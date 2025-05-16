@@ -183,10 +183,10 @@ public class AdminReposatory : IAdminReposatory
     }
 
     // Courses
-    public async Task<IEnumerable<courseResponseDto>> GetAllCoursesAsync()
+    public async Task<IEnumerable<CourseResponseDto>> GetAllCoursesAsync()
     {
         var courses = await _courseReposatory.GetAllAsync();
-        var courseDtos = courses.Select(c => new courseResponseDto
+        var courseDtos = courses.Select(c => new CourseResponseDto
         {
             Id = c.Id,
             Name = c.Name,
@@ -327,7 +327,8 @@ public class AdminReposatory : IAdminReposatory
 
     public async Task<Course?> CreateCourseAsync(CreateCourseReqDto course)
     {
-        var newcourse = new Course{
+        var newcourse = new Course
+        {
             CourseCode = course.CourseCode,
             CreditHours = course.CreditHours,
             Name = course.Name,
@@ -353,12 +354,12 @@ public class AdminReposatory : IAdminReposatory
         return $"Course with Id {courseId} has been successfully deleted.";
     }
 
-    public async Task<IEnumerable<courseResponseDto>> GetOpenCoursesAsync()
+    public async Task<IEnumerable<CourseResponseDto>> GetOpenCoursesAsync()
     {
         var courses = await _courseReposatory.GetAllAsync();
         var openCourses = courses.Where(c => c.IsOpen).ToList();
 
-        var courseDtos = openCourses.Select(c => new courseResponseDto
+        var courseDtos = openCourses.Select(c => new CourseResponseDto
         {
             Id = c.Id,
             Name = c.Name,

@@ -1,6 +1,8 @@
 using System.Security.Claims;
 using CollageManagementSystem.Models;
+using CollageMangmentSystem.Core.DTO.Responses.course;
 using CollageMangmentSystem.Core.Entities;
+using CollageMangmentSystem.Core.Entities.course;
 
 namespace CollageManagementSystem.Services
 {
@@ -13,11 +15,14 @@ namespace CollageManagementSystem.Services
         // Task<User> GetUserByRefreshToken(string refreshToken);
         Task CreateUser(User user);
         Task UpdateUser(User user);
-        Task<Guid> GetUserIdFromClaims(ClaimsPrincipal userClaims);
         Task<List<User>> GetUsersByDepartmentId(Guid departmentId);
         Task<string> GetRoleByUserId(Guid id);
         Task<string> GetUserNameById(Guid id);
-
         Task<User?> GetUserByClerkId(string clerkId);
+
+        Task<IEnumerable<CourseResponseDto>> GetCoursesUserCanEnroll(Guid userId);
+        Task<User?> GetUserByStudentId(string studentCollageId);
+
+
     }
 }
