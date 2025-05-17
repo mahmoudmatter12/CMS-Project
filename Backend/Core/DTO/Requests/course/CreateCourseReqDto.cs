@@ -20,7 +20,6 @@ namespace CollageManagementSystem.Core.Entities.department
         public bool IsOpen { get; set; } = false;
 
         public List<Guid>? PrerequisiteCourseIds { get; set; } = new List<Guid>();
-
+        public Guid? InstructorId { get; set; }
     }
-
 }

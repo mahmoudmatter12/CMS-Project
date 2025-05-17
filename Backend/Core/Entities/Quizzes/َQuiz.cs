@@ -19,9 +19,10 @@ namespace Core.Entities.Quizzes
         // foreign key to the creator -- each user can create multiple quizzes
         // but each quiz can be created by only one user
         public Guid? CreatorId { get; set; } // FK to User
-        public User? Creator { get; set; }   // Navigation property
+        public User? Creator { get; set; } // Navigation property
         public ICollection<QuizQuestion> Questions { get; set; } = new List<QuizQuestion>();
-        // each quiz is for only one course 
+
+        // each quiz is for only one course
         // each course can have multiple quizzes
         public Guid? CourseId { get; set; } // FK to Course
         public Course? Course { get; set; } // Navigation property
@@ -36,7 +37,6 @@ namespace Core.Entities.Quizzes
             return "Forever";
         }
 
-
         public Quiz CreateQuizDto(CreateQuizDto quiz)
         {
             var newQuiz = new Quiz
@@ -49,23 +49,23 @@ namespace Core.Entities.Quizzes
                 PassingMarks = quiz.PassingMarks,
                 IsActive = quiz.IsActive,
                 MaxAttempts = quiz.MaxAttempts,
-                Questions = quiz.Questions.Select(q => new QuizQuestion
-                {
-                    QuestionText = q.QuestionText,
-                    Type = q.Type,
-                    Answers = q.Answers,
-                    Marks = q.Marks,
-                    CorrectAnswerIndex = q.CorrectAnswerIndex,
-                    Hint = q.Hint,
-                    Explanation = q.Explanation,
-                    ImageUrl = q.ImageUrl,
-                    Tags = q.Tags ?? new List<string>(),
-                }).ToList()
+                Questions = quiz
+                    .Questions.Select(q => new QuizQuestion
+                    {
+                        QuestionText = q.QuestionText,
+                        Type = q.Type,
+                        Answers = q.Answers,
+                        Marks = q.Marks,
+                        CorrectAnswerIndex = q.CorrectAnswerIndex,
+                        Hint = q.Hint,
+                        Explanation = q.Explanation,
+                        ImageUrl = q.ImageUrl,
+                        Tags = q.Tags ?? new List<string>(),
+                    })
+                    .ToList(),
             };
 
             return newQuiz;
         }
     }
-
-
 }

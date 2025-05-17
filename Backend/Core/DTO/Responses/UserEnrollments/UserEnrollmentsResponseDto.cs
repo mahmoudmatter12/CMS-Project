@@ -10,9 +10,5 @@ namespace CollageMangmentSystem.Controllers
         public Guid CourseId { get; set; }
         public DateTime EnrollDate { get; set; } = DateTime.UtcNow;
         public string? Status { get; set; } = UserCourseStatus.Enrolled;
-
-        // public virtual Course? Course { get; set; }
-        // public virtual User? User { get; set; }
-
     }
 }

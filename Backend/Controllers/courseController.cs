@@ -13,14 +13,19 @@ namespace CollageMangmentSystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-
     public class CourseController : ControllerBase
     {
         private readonly IRepository<Course> _CourseRepo;
         private readonly IDepRepostaory<Department> _depRepo;
         private readonly ICourseReposatory<Course> _courseReposatory;
         private readonly IUserService _userService;
-        public CourseController(IRepository<Course> courseRepo, IUserService userService, IDepRepostaory<Department> depRepo, ICourseReposatory<Course> courseReposatory)
+
+        public CourseController(
+            IRepository<Course> courseRepo,
+            IUserService userService,
+            IDepRepostaory<Department> depRepo,
+            ICourseReposatory<Course> courseReposatory
+        )
         {
             _courseReposatory = courseReposatory;
             _CourseRepo = courseRepo;
@@ -45,7 +50,7 @@ namespace CollageMangmentSystem.Controllers
                 IsOpen = course.IsOpen,
                 DepartmentId = course.DepartmentId,
                 PrerequisiteCourseIds = course.PrerequisiteCourseIds ?? new List<Guid>(),
-                CourseCode = course.CourseCode
+                CourseCode = course.CourseCode,
             };
 
             await _CourseRepo.AddAsync(newCourse);
@@ -73,10 +78,9 @@ namespace CollageMangmentSystem.Controllers
                 IsOpen = course.IsOpen,
                 CourseCode = course.CourseCode,
                 DepName = await _depRepo.GetDepartmentName(course.DepartmentId),
-                PrerequisiteCourses = course.PrerequisiteCoursesNames()
+                PrerequisiteCourses = course.PrerequisiteCoursesNames(),
             };
             return Ok(courseDtos);
         }
-
     }
 }

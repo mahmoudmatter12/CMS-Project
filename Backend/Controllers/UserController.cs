@@ -24,9 +24,13 @@ namespace CollageMangmentSystem.Controllers
         private readonly IUserEnrollments<UserEnrollments> _userEnrollmentsService;
         private readonly ILogger<UsersController> _logger;
 
-        public UsersController(IUserService userService, IDepRepostaory<Department> depRepo,
-            ICourseReposatory<Course> courseReposatory, IUserEnrollments<UserEnrollments> userEnrollmentsService,
-            ILogger<UsersController> logger)
+        public UsersController(
+            IUserService userService,
+            IDepRepostaory<Department> depRepo,
+            ICourseReposatory<Course> courseReposatory,
+            IUserEnrollments<UserEnrollments> userEnrollmentsService,
+            ILogger<UsersController> logger
+        )
         {
             _userService = userService;
             _depRepo = depRepo;
@@ -47,12 +51,25 @@ namespace CollageMangmentSystem.Controllers
             return Ok(user);
         }
 
-
-        [HttpGet("{userId}/courses")]
+        [HttpGet("{userId}/available-courses")]
         public async Task<IActionResult> GetCoursesUserCanEnroll(Guid userId)
         {
             var courses = await _userService.GetCoursesUserCanEnroll(userId);
             return Ok(courses);
+        }
+
+        [HttpGet("user/{userId}/enrollment/{enrollmentId}")]
+        public async Task<IActionResult> GetUserEnrollmentDetails(Guid userId, Guid enrollmentId)
+        {
+            var enrollmentDetails = await _userService.GetUserEnrollmentDetails(
+                userId,
+                enrollmentId
+            );
+            if (enrollmentDetails == null)
+            {
+                return NotFound(new { Message = "Enrollment not found" });
+            }
+            return Ok(enrollmentDetails);
         }
     }
 }

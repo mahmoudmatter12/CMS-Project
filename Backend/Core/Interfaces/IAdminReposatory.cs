@@ -19,7 +19,7 @@ public interface IAdminReposatory
     Task<IEnumerable<User>> GetUsersByNameAsync(string name);
     Task<IEnumerable<User>> GetUsersByRoleAsync(UserRole role);
     Task<IEnumerable<User>> GetUsersByCourseAsync(Guid courseId);
-    Task<IEnumerable<User>> GetUsersWithRolesAsync();  // Ensure returns `IEnumerable<T>`
+    Task<IEnumerable<User>> GetUsersWithRolesAsync(); // Ensure returns `IEnumerable<T>`
 
     Task<string> DeleteUser(string clerkId);
     Task ToggleUserRoleAsync(Guid userId, UserRole role);
@@ -34,7 +34,7 @@ public interface IAdminReposatory
     Task<IEnumerable<CourseResponseDto>> GetOpenCoursesAsync();
     Task<Course?> CreateCourseAsync(CreateCourseReqDto course);
     Task<string?> DeleteCourseAsync(string courseId);
-    Task<Course?> GetCourseByIdAsync(Guid id);
+    Task<CourseResponseDto?> GetCourseByIdAsync(Guid id);
     Task<IEnumerable<Course>> GetCoursesByNameAsync(string name);
     Task<IEnumerable<Course>> GetCoursesByDepartmentAsync(Guid departmentId);
     Task<Course?> ToggleCourseStatusAsync(Guid courseId);
@@ -45,6 +45,10 @@ public interface IAdminReposatory
     Task<IEnumerable<Department>> GetDepartmentsByNameAsync(string name);
 
     // Combined Queries
-    Task<IEnumerable<User>> GetUsersByDepartmentAsync(Guid departmentId, Guid? courseId = null, Guid? enrollmentId = null);
-    Task<IEnumerable<CourseWithUsers>> GetCoursesWithEnrolledUsersAsync(Guid courseId);  // Optional
+    Task<IEnumerable<User>> GetUsersByDepartmentAsync(
+        Guid departmentId,
+        Guid? courseId = null,
+        Guid? enrollmentId = null
+    );
+    Task<IEnumerable<CourseWithUsers>> GetCoursesWithEnrolledUsersAsync(Guid courseId); // Optional
 }

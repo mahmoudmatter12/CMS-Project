@@ -9,10 +9,11 @@ import { toast } from "sonner"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import type { Course, EnrollmentsResponse } from "@/types/types"
 import EnrollCourseForm from "@/components/UserEnrollment/enroll-course-form"
+import EnrollmentCardSkeleton from "@/components/UserEnrollment/EnrollmentCardSkeleton"
+import Link from "next/link"
 
 export default function EnrolledSubjects() {
   // Get the id from the URL parameters
@@ -66,7 +67,7 @@ export default function EnrolledSubjects() {
   const fetchCourses = async () => {
     try {
       setLoadingCourses(true)
-      const res = await fetch(`http://localhost:5168/api/Users/${id}/courses`, { cache: "no-store" })
+      const res = await fetch(`http://localhost:5168/api/Users/${id}/available-courses`, { cache: "no-store" })
       if (!res.ok) {
         throw new Error("Failed to fetch available courses")
       }
@@ -84,6 +85,7 @@ export default function EnrolledSubjects() {
   useEffect(() => {
     fetchEnrolledSubjects()
     fetchCourses()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
   // Handle refresh action
@@ -102,8 +104,6 @@ export default function EnrolledSubjects() {
       day: "numeric",
     })
   }
-
-  const [isOpen] = useState(false)
 
   return (
     <div className="space-y-6">
@@ -176,10 +176,10 @@ export default function EnrolledSubjects() {
                   <p className="text-xl font-bold text-green-400 mt-1">
                     {enrollmentsData.enrollments && enrollmentsData.enrollments.length > 0
                       ? formatDate(
-                          enrollmentsData.enrollments.sort(
-                            (a, b) => new Date(b.enrollDate).getTime() - new Date(a.enrollDate).getTime(),
-                          )[0].enrollDate,
-                        )
+                        enrollmentsData.enrollments.sort(
+                          (a, b) => new Date(b.enrollDate).getTime() - new Date(a.enrollDate).getTime(),
+                        )[0].enrollDate,
+                      )
                       : "N/A"}
                   </p>
                 </div>
@@ -263,9 +263,12 @@ export default function EnrolledSubjects() {
                             variant="outline"
                             size="sm"
                             className="w-full mt-4 border-indigo-700 hover:bg-indigo-700/30 hover:text-indigo-300 transition-all duration-300"
-                            disabled={true}
                           >
-                            View Details
+                            <Link href={`/user/dashboard/enrollments/${id}/details/${enrollment.enrollmentId}`}
+                              className="flex items-center gap-2">
+                              <FiBookOpen className="mr-2" />
+                              <span className="hidden sm:inline">View Details</span>
+                            </Link>
                           </Button>
                         </div>
                       </CardContent>
@@ -299,14 +302,6 @@ export default function EnrolledSubjects() {
         <motion.div
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => {
-            if (!isOpen) {
-              toast.info("Opening enrollment form", {
-                description: "Select a course to enroll",
-                duration: 2000,
-              })
-            }
-          }}
         >
           <EnrollCourseForm onSuccess={fetchEnrolledSubjects} refresh={fetchCourses} courses={courses}>
             <Button size="lg" className="rounded-full w-14 h-14 bg-indigo-600 hover:bg-indigo-700 shadow-lg">
@@ -319,27 +314,3 @@ export default function EnrolledSubjects() {
   )
 }
 
-// Skeleton loader for enrollment cards
-function EnrollmentCardSkeleton() {
-  return (
-    <Card className="bg-gray-800/50 border-gray-700 h-full">
-      <CardContent className="p-5">
-        <div className="flex items-center gap-3 mb-3">
-          <Skeleton className="h-10 w-10 rounded-lg" />
-          <Skeleton className="h-5 w-20 ml-auto" />
-        </div>
-
-        <Skeleton className="h-6 w-3/4 mb-2" />
-        <Skeleton className="h-6 w-1/2 mb-6" />
-
-        <div className="mt-auto pt-4">
-          <div className="flex justify-between items-center">
-            <Skeleton className="h-5 w-24" />
-            <Skeleton className="h-5 w-28" />
-          </div>
-          <Skeleton className="h-9 w-full mt-4" />
-        </div>
-      </CardContent>
-    </Card>
-  )
-}

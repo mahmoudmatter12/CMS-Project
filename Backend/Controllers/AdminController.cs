@@ -18,7 +18,11 @@ namespace CollageMangmentSystem.Core.DTO.Requests.Admin
 
         private readonly IDepRepostaory<Department> _departmentRepository;
 
-        public AdminController(IAdminReposatory adminReposatory, ILogger<AdminController> logger, IDepRepostaory<Department> departmentRepository)
+        public AdminController(
+            IAdminReposatory adminReposatory,
+            ILogger<AdminController> logger,
+            IDepRepostaory<Department> departmentRepository
+        )
         {
             _departmentRepository = departmentRepository;
             _adminReposatory = adminReposatory;
@@ -67,7 +71,6 @@ namespace CollageMangmentSystem.Core.DTO.Requests.Admin
         {
             var s = await _adminReposatory.DeleteUser(clerkId);
             return s;
-
         }
 
         [HttpGet("users/email/{email}")]
@@ -125,10 +128,7 @@ namespace CollageMangmentSystem.Core.DTO.Requests.Admin
             try
             {
                 await _adminReposatory.ToggleUserRoleAsync(userId, role);
-                return Ok(new
-                {
-                    message = "User Updated successfully , Now the user is " + role,
-                });
+                return Ok(new { message = "User Updated successfully , Now the user is " + role });
             }
             catch (KeyNotFoundException ex)
             {
@@ -173,11 +173,19 @@ namespace CollageMangmentSystem.Core.DTO.Requests.Admin
         }
 
         [HttpGet("users/department/{departmentId}")]
-        public async Task<IActionResult> GetUsersByDepartment(Guid departmentId, [FromQuery] Guid? courseId = null, [FromQuery] Guid? enrollmentId = null)
+        public async Task<IActionResult> GetUsersByDepartment(
+            Guid departmentId,
+            [FromQuery] Guid? courseId = null,
+            [FromQuery] Guid? enrollmentId = null
+        )
         {
             try
             {
-                var users = await _adminReposatory.GetUsersByDepartmentAsync(departmentId, courseId, enrollmentId);
+                var users = await _adminReposatory.GetUsersByDepartmentAsync(
+                    departmentId,
+                    courseId,
+                    enrollmentId
+                );
                 return Ok(users);
             }
             catch (Exception ex)
@@ -205,6 +213,7 @@ namespace CollageMangmentSystem.Core.DTO.Requests.Admin
                 return StatusCode(500, "Internal server error");
             }
         }
+
         [HttpGet("courses/open")]
         public async Task<IActionResult> GetOpenCourses()
         {
@@ -234,7 +243,8 @@ namespace CollageMangmentSystem.Core.DTO.Requests.Admin
                 {
                     CourseCode = course.CourseCode,
                     CreditHours = course.CreditHours,
-                    Name = course.Name
+                    Name = course.Name,
+                    InstructorName = createdCourse.Instructor?.FullName ?? "Unknown Instructor",
                 };
                 return createdCourseDto;
             }
@@ -244,6 +254,7 @@ namespace CollageMangmentSystem.Core.DTO.Requests.Admin
                 throw new Exception("An error occurred while creating the course.", ex);
             }
         }
+
         [HttpDelete("course/{id}/delete")]
         public async Task<string?> DeleteCourseAsync(string id)
         {

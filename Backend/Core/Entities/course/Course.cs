@@ -1,13 +1,12 @@
+using System.ComponentModel.DataAnnotations;
 using CollageMangmentSystem.Core.DTO.Responses.course;
 using CollageMangmentSystem.Core.Entities.department;
 using Core.Entities.Quizzes;
-using System.ComponentModel.DataAnnotations;
 
 namespace CollageMangmentSystem.Core.Entities.course
 {
     public class Course : BaseEntity
     {
-
         [Required]
         [StringLength(100)]
         public string Name { get; set; } = string.Empty;
@@ -25,6 +24,12 @@ namespace CollageMangmentSystem.Core.Entities.course
         public Guid? DepartmentId { get; set; }
         public Department? Department { get; set; }
         public bool IsOpen { get; set; } = false;
+
+        public string? Description { get; set; } = string.Empty;
+
+        // each course has only one instructor
+        public Guid? InstructorId { get; set; }
+        public User? Instructor { get; set; }
 
         public List<Guid> PrerequisiteCourseIds { get; set; } = new List<Guid>();
         public List<Course> PrerequisiteCourses { get; set; } = new List<Course>();
@@ -56,8 +61,7 @@ namespace CollageMangmentSystem.Core.Entities.course
                 DepartmentId = this.DepartmentId,
                 DepName = this.Department?.Name,
                 PrerequisiteCourseIds = this.PrerequisiteCourseIds,
-                CourseCode = this.CourseCode
-
+                CourseCode = this.CourseCode,
             };
             return courseResponseDto;
         }

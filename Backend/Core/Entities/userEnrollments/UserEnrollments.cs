@@ -10,10 +10,10 @@ namespace CollageManagementSystem.Core.Entities.userEnrollments
         public DateTime EnrollDate { get; set; } = DateTime.UtcNow;
         public string? Status { get; set; } = UserCourseStatus.Enrolled;
 
-        public virtual Course? Course { get; set; }
-        public virtual User? User { get; set; }
+        public Course? Course { get; set; }
+        public User? User { get; set; }
 
-        public string getUserCourseStatus(int status)
+        public string GetUserCourseStatus(int status)
         {
             return status switch
             {
@@ -24,5 +24,4 @@ namespace CollageManagementSystem.Core.Entities.userEnrollments
             };
         }
     }
-
 }

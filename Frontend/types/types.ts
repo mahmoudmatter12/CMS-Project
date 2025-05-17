@@ -91,14 +91,12 @@ export enum QuestionType {
   SHORT_ANSWER = "SHORT_ANSWER",
 }
 
-
 export interface UserEnrollmentsResponse {
   message: string;
   userName: string;
   enrollments: UserEnrollment[];
 }
 
-	
 export interface UserEnrollment {
   id: string;
   courseId: string;
@@ -107,30 +105,56 @@ export interface UserEnrollment {
   enrollmentId: string;
 }
 export interface Enrollment {
-  enrollmentId: string
-  courseId: string
-  courseName: string
-  enrollDate: string
+  enrollmentId: string;
+  courseId: string;
+  courseName: string;
+  enrollDate: string;
 }
 
 export interface EnrollmentsResponse {
-  message: string
-  userName: string
-  enrollments: Enrollment[]
+  message: string;
+  userName: string;
+  enrollments: Enrollment[];
 }
 
 export interface EnrollmentsResponse {
-  message: string
-  userName: string
-  enrollments: Enrollment[]
+  message: string;
+  userName: string;
+  enrollments: Enrollment[];
 }
 
 export interface EnrollmentRequest {
-  userId: string
-  courseId: string
+  userId: string;
+  courseId: string;
 }
 
 export interface EnrollmentResponse {
-  message: string
-  success: boolean
+  message: string;
+  success: boolean;
+}
+
+export interface UserEnrollmentInterFace {
+  userId: string;
+  courseId: string;
+  studentName?: string;
+  studentEmail?: string;
+  courseName?: string;
+  courseCode?: string;
+  semester?: number;
+  creditHours?: number;
+  instructorName?: string;
+  instructorEmail?: string;
+  depName?: string;
+  hodName?: string;
+  quizMetaData?: QuizMetaData[];
+}
+
+export interface QuizMetaData {
+  quizId: string;
+  quizTitle: string;
+  quizDescription: string;
+  quizStartDate: Date | null;
+  quizEndDate: Date | null;
+  quizDuration: number;
+  quizCreatorName: string;
 }

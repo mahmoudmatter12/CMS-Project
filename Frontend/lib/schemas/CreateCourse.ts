@@ -13,5 +13,6 @@ export const createCourseSchema = z.object({
     .number()
     .min(1, "Credit hours must be at least 1")
     .max(10, "Credit hours must be at most 6"),
-    semester: z.number().optional(),
+  semester: z.number().optional(),
+  InstructorId: z.string().optional(),
 });
