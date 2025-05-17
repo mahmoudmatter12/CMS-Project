@@ -31,13 +31,13 @@ export function DevelopersSection() {
       <div className="container mx-auto px-4">
         <motion.h2
           variants={animations.title}
-          className="text-3xl font-bold text-center mb-4 bg-gradient-to-r from-rose-400 to-pink-400 bg-clip-text text-transparent"
+          className="text-3xl font-bold text-center mb-4 bg-gradient-to-r text-blue-400 bg-clip-text "
         >
           Meet Our Development Team
         </motion.h2>
         <motion.div
           variants={animations.divider}
-          className="h-1 w-16 bg-gradient-to-r from-rose-500 to-pink-500 mx-auto mb-6 rounded-full"
+          className="h-1 w-16 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mb-6 rounded-full"
         />
         <motion.p
           variants={animations.description}
@@ -52,7 +52,7 @@ export function DevelopersSection() {
               key={index}
               variants={scaleVariant(0.3 + index * 0.1)}
               whileHover={{ y: -5 }}
-              className="bg-gradient-to-b from-white/5 to-transparent p-5 rounded-xl border border-gray-800 hover:border-pink-500/30 transition-all text-center"
+              className="bg-gradient-to-b from-white/5 to-transparent p-5 rounded-xl border border-gray-800 hover:border-blue-500/30 transition-all text-center"
             >
               {developer.imgUrl ? (
                 <Image
@@ -71,14 +71,13 @@ export function DevelopersSection() {
                 </div>
               )}
               <h3 className="font-medium text-base mb-1">{developer.name}</h3>
-              <p className="text-pink-400 text-xs mb-3">{developer.role}</p>
+              <p className="text-blue-500 text-xs mb-3">{developer.role}</p>
               <div className="flex justify-center gap-3">
                 <a
                   href={developer.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-500 hover:text-pink-400 transition-colors"
-                  title={`GitHub profile of ${developer.name}`}
+                  className="text-gray-500 hover:text-blue-500 transition-colors"
                 >
                   <Github className="w-4 h-4" />
                 </a>
@@ -86,8 +85,7 @@ export function DevelopersSection() {
                   href={developer.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-500 hover:text-pink-400 transition-colors"
-                  title={`LinkedIn profile of ${developer.name}`}
+                  className="text-gray-500 hover:text-blue-500 transition-colors"
                 >
                   <Linkedin className="w-4 h-4" />
                 </a>

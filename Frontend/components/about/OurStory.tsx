@@ -6,10 +6,10 @@ export function OurStory() {
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-rose-400 to-pink-400 bg-clip-text text-transparent">
+            <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r text-blue-400 bg-clip-text ">
               Our Story
             </h2>
-            <div className="h-1 w-16 bg-gradient-to-r from-rose-500 to-pink-500 mb-8 rounded-full" />
+            <div className="h-1 w-16 bg-gradient-to-r from-blue-500 to-purple-500 mb-8 rounded-full" />
 
             <div className="space-y-6 text-gray-300">
               <p>
