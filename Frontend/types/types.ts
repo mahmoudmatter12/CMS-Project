@@ -38,6 +38,9 @@ export interface Course {
   departmentId: string;
   prerequisiteCourseIds: string[];
   prerequisiteCourseNames: string[];
+  instructorName: string;
+  instructorEmail: string;
+  instructorImg: string;
 }
 
 export interface Event {
@@ -144,6 +147,7 @@ export interface UserEnrollmentInterFace {
   creditHours?: number;
   instructorName?: string;
   instructorEmail?: string;
+  instructorImg?: string;
   depName?: string;
   hodName?: string;
   quizMetaData?: QuizMetaData[];

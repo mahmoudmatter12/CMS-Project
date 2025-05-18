@@ -14,7 +14,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { SubjectCardSkeleton } from "./SubjectCardSkeleton"
 import SubjectCard from "./SubjectCard"
 import NewSubjectForm from "./NewSubjectForm"
-import type { Course } from "@/types/types"
+import type { Course, User } from "@/types/types"
 
 export default function SubjectMainComp() {
     const [subjects, setSubjects] = useState<Course[]>([])
@@ -24,6 +24,7 @@ export default function SubjectMainComp() {
     const [searchQuery, setSearchQuery] = useState("")
     const [viewMode, setViewMode] = useState<"cards" | "table">("cards")
     const [refreshing, setRefreshing] = useState(false)
+    const [Instructors, setInstructors] = useState<User[] | null>(null)
 
     const fetchSubjects = async () => {
         setLoading(true)
@@ -47,7 +48,37 @@ export default function SubjectMainComp() {
         }
     }
 
-    
+    const fetchInstructors = async () => {
+        try {
+            const res = await fetch(`http://localhost:5168/api/Admin/users/role/2`)
+            const data = await res.json()
+            if (Array.isArray(data)) {
+                const instructors = data.map((instructor) => ({
+                    id: instructor.id,
+                    fullname: instructor.fullname,
+                    email: instructor.email,
+                    profilePicture: instructor.profilePicture,
+                    departmentId: instructor.departmentId,
+                    depName: instructor.depName,
+                    clerkId: instructor.clerkId,
+                    studentCollageId: instructor.studentCollageId,
+                    isBoarded: instructor.isBoarded,
+                    role: instructor.role,
+                    cgpa: instructor.cgpa,
+                    level: instructor.level,
+                }))
+                console.log("Instructors:", instructors)
+                setInstructors(instructors)
+            } else {
+                console.error("Unexpected response format:", data)
+                toast.error("Failed to load instructors")
+            }
+        } catch (error) {
+            console.error("Error fetching instructors:", error)
+            toast.error("Failed to load instructors")
+        }
+    }
+
 
     const handleDelete = async (id: string) => {
         const confirmDelete = confirm("Are you sure you want to delete this subject?")
@@ -99,6 +130,7 @@ export default function SubjectMainComp() {
 
     useEffect(() => {
         fetchSubjects()
+        fetchInstructors()
     }, [])
 
     useEffect(() => {
@@ -174,7 +206,7 @@ export default function SubjectMainComp() {
                         </Tooltip>
                     </TooltipProvider>
 
-                    <NewSubjectForm onSuccess={fetchSubjects} />
+                    <NewSubjectForm onSuccess={fetchSubjects} Instructors={Instructors} />
                 </div>
             </div>
 
@@ -333,7 +365,7 @@ export default function SubjectMainComp() {
                                     <p className="text-gray-400 max-w-md mx-auto pb-4">
                                         {searchQuery ? "Try adjusting your search or filter" : "No subjects are currently registered"}
                                     </p>
-                                    <NewSubjectForm onSuccess={fetchSubjects} />
+                                    <NewSubjectForm onSuccess={fetchSubjects} Instructors={Instructors} />
                                 </div>
                             )}
                         </motion.div>
@@ -409,9 +441,9 @@ export default function SubjectMainComp() {
                                                             <td className="px-6 py-4 font-medium text-white">{subject.name}</td>
                                                             <td className="px-6 py-4">{subject.creditHours || "-"}</td>
                                                             <td className="px-6 py-4">
-                                                                {subject.prerequisiteCourses?.length > 0 ? (
+                                                                {subject.prerequisiteCourseNames?.length > 0 ? (
                                                                     <div className="flex flex-wrap gap-1">
-                                                                        {subject.prerequisiteCourses.map((pre) => (
+                                                                        {subject.prerequisiteCourseNames.map((pre) => (
                                                                             <Badge key={pre} variant="outline" className="text-xs text-white">
                                                                                 {pre}
                                                                             </Badge>
@@ -501,7 +533,7 @@ export default function SubjectMainComp() {
                                                                         ? "Try adjusting your search or filter"
                                                                         : "No subjects are currently registered"}
                                                                 </p>
-                                                                <NewSubjectForm onSuccess={fetchSubjects} />
+                                                                <NewSubjectForm onSuccess={fetchSubjects} Instructors={Instructors} />
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -518,7 +550,7 @@ export default function SubjectMainComp() {
             {/* Floating Action Button for Mobile */}
             <div className="fixed bottom-6 right-6 md:hidden">
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                    <NewSubjectForm>
+                    <NewSubjectForm onSuccess={fetchSubjects} Instructors={Instructors}>
                         <Button size="lg" className="rounded-full w-14 h-14 bg-indigo-600 hover:bg-indigo-700 shadow-lg">
                             <FiPlus size={24} />
                         </Button>

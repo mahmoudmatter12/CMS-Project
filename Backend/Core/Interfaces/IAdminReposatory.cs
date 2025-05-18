@@ -17,7 +17,7 @@ public interface IAdminReposatory
     Task<UserResponseDto?> GetUserByIdAsync(Guid id);
     Task<User?> GetUserByEmailAsync(string email);
     Task<IEnumerable<User>> GetUsersByNameAsync(string name);
-    Task<IEnumerable<User>> GetUsersByRoleAsync(UserRole role);
+    Task<IEnumerable<UserResponseDto>> GetUsersByRoleAsync(UserRole role);
     Task<IEnumerable<User>> GetUsersByCourseAsync(Guid courseId);
     Task<IEnumerable<User>> GetUsersWithRolesAsync(); // Ensure returns `IEnumerable<T>`
 

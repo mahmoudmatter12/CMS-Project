@@ -188,7 +188,7 @@ export function AccountMenu() {
                       <motion.div variants={containerVariants}>
                         <DropdownMenuItem className="p-0 hover:bg-gray-50 dark:hover:bg-gray-700/50">
                           <motion.div variants={itemVariants}>
-                            <Link href="/user/profile" className="flex items-center w-full px-4 py-2">
+                            <Link href={`/user/${user?.id}/profile`} className="flex items-center w-full px-4 py-2">
                               <FiUser className="mr-2 text-gray-700" size={16} />
                               User Profile
                             </Link>

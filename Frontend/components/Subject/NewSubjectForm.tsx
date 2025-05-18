@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useState } from "react"
 import { useForm, type SubmitHandler, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -17,11 +19,14 @@ import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
-import { FiPlus, FiEdit2, FiBook, FiLock, FiBookOpen } from "react-icons/fi"
+import { FiPlus, FiEdit2, FiBook, FiLock, FiBookOpen, FiUser } from "react-icons/fi"
 import { FaGraduationCap } from "react-icons/fa"
 import { createCourseSchema } from "@/lib/schemas/CreateCourse"
 import { useCourseData } from "@/lib/hooks/use-course-data"
 import { MultiSelect } from "./multi-select"
+import type { User } from "@/types/types"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { motion } from "framer-motion"
 
 type SubjectFormValues = z.infer<typeof createCourseSchema>
 
@@ -31,12 +36,19 @@ interface SubjectFormProps {
     onSuccess?: () => void
     onOpenChange?: (open: boolean) => void
     children?: React.ReactNode
+    Instructors: User[] | null
 }
 
-export default function NewSubjectForm({ defaultValues, isEdit = false, onSuccess, onOpenChange  }: SubjectFormProps) {
+export default function NewSubjectForm({
+    defaultValues,
+    isEdit = false,
+    onSuccess,
+    onOpenChange,
+    Instructors,
+}: SubjectFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isOpen, setIsOpen] = useState(false)
-    const { departments, courses, isLoadingDepartments, isLoadingCourses} = useCourseData()
+    const { departments, courses, isLoadingDepartments, isLoadingCourses } = useCourseData()
 
     const {
         register,
@@ -44,6 +56,8 @@ export default function NewSubjectForm({ defaultValues, isEdit = false, onSucces
         reset,
         control,
         formState: { errors, isDirty },
+        setValue,
+        watch,
     } = useForm<SubjectFormValues>({
         resolver: zodResolver(createCourseSchema),
         defaultValues: {
@@ -57,8 +71,7 @@ export default function NewSubjectForm({ defaultValues, isEdit = false, onSucces
         },
     })
 
-
-
+    const selectedInstructorId = watch("InstructorId")
 
     const handleOpenChange = (open: boolean) => {
         setIsOpen(open)
@@ -70,7 +83,6 @@ export default function NewSubjectForm({ defaultValues, isEdit = false, onSucces
         console.log("Form data:", data)
         setIsSubmitting(true)
         try {
-
             const response = await fetch("http://localhost:5168/api/Admin/course/create", {
                 method: "POST",
                 headers: {
@@ -102,6 +114,10 @@ export default function NewSubjectForm({ defaultValues, isEdit = false, onSucces
         id: course.id,
         label: `${course.courseCode} - ${course.name}`,
     }))
+
+    const selectInstructor = (instructorId: string) => {
+        setValue("InstructorId", instructorId, { shouldValidate: true })
+    }
 
     return (
         <Dialog open={isOpen} onOpenChange={handleOpenChange}>
@@ -189,6 +205,66 @@ export default function NewSubjectForm({ defaultValues, isEdit = false, onSucces
                             )}
                         />
                         {errors.departmentId && <p className="text-sm text-red-500">{errors.departmentId.message}</p>}
+                    </div>
+
+                    {/* Instructor - Enhanced UI */}
+                    <div className="space-y-2">
+                        <Label className="text-white flex items-center gap-2">
+                            <FiUser size={16} />
+                            Instructor *
+                        </Label>
+                        <Controller
+                            name="InstructorId"
+                            control={control}
+                            render={({ field }) => (
+                                <div className="space-y-2">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                        {Instructors?.map((instructor) => (
+                                            <motion.div
+                                                key={instructor.id}
+                                                whileHover={{ scale: 1.02 }}
+                                                whileTap={{ scale: 0.98 }}
+                                                onClick={() => selectInstructor(instructor.id)}
+                                                className={`relative cursor-pointer rounded-lg p-4 transition-all duration-200 ${selectedInstructorId === instructor.id
+                                                        ? "bg-gradient-to-br from-purple-700 to-blue-700 text-white shadow-lg"
+                                                        : "bg-gray-800 hover:bg-gray-700 text-white"
+                                                    }`}
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <Avatar className="h-12 w-12 border-2 border-gray-700">
+                                                        <AvatarImage
+                                                            src={instructor.profilePicture || "/placeholder.svg?height=40&width=40"}
+                                                            alt={instructor.fullname}
+                                                        />
+                                                        <AvatarFallback className="bg-gray-700 text-white">
+                                                            {instructor.fullname
+                                                                .split(" ")
+                                                                .map((name) => name[0])
+                                                                .join("")}
+                                                        </AvatarFallback>
+                                                    </Avatar>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="font-medium truncate">{instructor.fullname}</p>
+                                                        <p className="text-xs opacity-70 truncate">{instructor.depName}</p>
+                                                    </div>
+                                                </div>
+                                                {selectedInstructorId === instructor.id && (
+                                                    <motion.div
+                                                        initial={{ scale: 0 }}
+                                                        animate={{ scale: 1 }}
+                                                        className="absolute top-2 right-2 h-5 w-5 bg-white rounded-full flex items-center justify-center"
+                                                    >
+                                                        <div className="h-3 w-3 rounded-full bg-blue-600"></div>
+                                                    </motion.div>
+                                                )}
+                                            </motion.div>
+                                        ))}
+                                    </div>
+                                    <input type="hidden" {...field} value={field.value || ""} />
+                                </div>
+                            )}
+                        />
+                        {errors.InstructorId && <p className="text-sm text-red-500">{errors.InstructorId.message}</p>}
                     </div>
 
                     {/* Prerequisites - Using custom MultiSelect component */}

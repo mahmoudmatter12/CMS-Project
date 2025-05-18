@@ -5,10 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CollageMangmentSystem.Infrastructure.Data.Repositories
 {
-    public class CourseReposatory<T> : ICourseReposatory<T> where T : class
-
+    public class CourseReposatory<T> : ICourseReposatory<T>
+        where T : class
     {
         protected readonly ApplicationDbContext _context;
+
         public CourseReposatory(ApplicationDbContext context)
         {
             _context = context;
@@ -31,7 +32,11 @@ namespace CollageMangmentSystem.Infrastructure.Data.Repositories
             return await _context.Set<Course>().ToListAsync();
         }
 
-        public async Task<IEnumerable<Course>> GetAllAsyncPaged(int pageNumber, int pageSize, Func<IQueryable<Course>, IQueryable<Course>>? include = null)
+        public async Task<IEnumerable<Course>> GetAllAsyncPaged(
+            int pageNumber,
+            int pageSize,
+            Func<IQueryable<Course>, IQueryable<Course>>? include = null
+        )
         {
             var query = _context.Set<Course>().AsQueryable();
 
@@ -80,14 +85,16 @@ namespace CollageMangmentSystem.Infrastructure.Data.Repositories
             }
             else
             {
-                throw new InvalidOperationException("Entity does not have the required properties for soft deletion.");
+                throw new InvalidOperationException(
+                    "Entity does not have the required properties for soft deletion."
+                );
             }
         }
 
         public Task<List<string>> GetCourseNamesByIds(List<Guid> courseIds)
         {
-            var courseNames = _context.Courses
-                .Where(c => courseIds.Contains(c.Id))
+            var courseNames = _context
+                .Courses.Where(c => courseIds.Contains(c.Id))
                 .Select(c => c.Name)
                 .ToListAsync();
 
@@ -96,8 +103,8 @@ namespace CollageMangmentSystem.Infrastructure.Data.Repositories
 
         public async Task<string> GetCourseNameById(Guid courseId)
         {
-            var courseName = await _context.Courses
-                .Where(c => c.Id == courseId)
+            var courseName = await _context
+                .Courses.Where(c => c.Id == courseId)
                 .Select(c => c.Name)
                 .FirstOrDefaultAsync();
 
@@ -106,21 +113,43 @@ namespace CollageMangmentSystem.Infrastructure.Data.Repositories
 
         public async Task<List<CourseResponseDto>> GetAllCoursers()
         {
-            var courses = await _context.Courses
+            // 1. get the courses
+            // with the instructor
+            // with the department
+            // with the prerequisite courses
+            var courses = await _context
+                .Courses.Include(c => c.Instructor)
                 .Include(c => c.Department)
+                .Include(c => c.PrerequisiteCourses)
                 .ToListAsync();
-            var courseDtos = courses.Select(c => new CourseResponseDto
+            // 2. map the courses to the courseResponseDto
+            var courseResponseDtos = courses
+                .Select(c => new CourseResponseDto
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    CreditHours = c.CreditHours,
+                    Semester = c.Semester,
+                    IsOpen = c.IsOpen,
+                    DepName = c.Department?.Name,
+                    DepartmentId = c.DepartmentId,
+                    PrerequisiteCourseIds = c.PrerequisiteCourseIds,
+                    InstructorName = c.Instructor?.FullName,
+                    InstructorEmail = c.Instructor?.Email,
+                    CourseCode = c.CourseCode,
+                    InstructorImg = c.Instructor?.ProfilePicture ?? "no-image.png",
+                })
+                .ToList();
+
+            foreach (var course in courseResponseDtos)
             {
-                Id = c.Id,
-                Name = c.Name,
-                CreditHours = c.CreditHours,
-                Semester = c.Semester,
-                IsOpen = c.IsOpen,
-                DepName = c.Department?.Name,
-                PrerequisiteCourses = c.PrerequisiteCoursesNames(),
-                CourseCode = c.CourseCode
-            }).ToList();
-            return courseDtos;
+                course.PrerequisiteCourses = await _context
+                    .Courses.Where(c => course.PrerequisiteCourseIds.Contains(c.Id))
+                    .Select(c => c.Name)
+                    .ToListAsync();
+            }
+            // 3. return the courseResponseDtos
+            return courseResponseDtos;
         }
     }
 }

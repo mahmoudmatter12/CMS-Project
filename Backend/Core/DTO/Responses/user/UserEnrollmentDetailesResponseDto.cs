@@ -30,6 +30,7 @@ namespace CollageMangmentSystem.Core.DTO.Responses.user
 
         public string? InstructorName { get; set; }
         public string? InstructorEmail { get; set; }
+        public string? InstructorImg { get; set; }
 
         // department Part
         public string? DepName { get; set; }

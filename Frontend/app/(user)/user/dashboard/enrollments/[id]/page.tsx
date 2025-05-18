@@ -143,7 +143,7 @@ export default function EnrolledSubjects() {
           </TooltipProvider>
 
           {/* Add Enrollment Form */}
-          <EnrollCourseForm onSuccess={fetchEnrolledSubjects} refresh={fetchCourses} courses={courses} />
+          <EnrollCourseForm onSuccess={fetchEnrolledSubjects} refresh={fetchCourses} courses={courses}  />
         </div>
       </div>
 
