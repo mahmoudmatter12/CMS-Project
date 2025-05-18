@@ -20,7 +20,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(); 
+
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
 // Add infrastructure services
@@ -141,7 +142,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend", policy =>
     {
         policy.WithOrigins(
-                "http://localhost:3000",
+                "http://localhost:3001",
                 "https://yourproductiondomain.com"
               )
               .AllowAnyHeader()

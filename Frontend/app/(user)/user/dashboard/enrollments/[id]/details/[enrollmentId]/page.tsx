@@ -87,6 +87,33 @@ export default function EnrollmentDetailsPage() {
   }
 
   useEffect(() => {
+    const fetchEnrollmentDetails = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+  
+        const response = await fetch(`http://localhost:5168/api/Users/user/${id}/enrollment/${enrollmentId}`, {
+          cache: "no-store",
+        })
+  
+        if (!response.ok) {
+          throw new Error(`Failed to fetch enrollment details (Status: ${response.status})`)
+        }
+  
+        const data: UserEnrollmentInterface = await response.json()
+        setEnrollmentDetails(data)
+        toast.success("Enrollment details loaded", {
+          description: `Details for ${data.courseName} loaded successfully`,
+          duration: 3000,
+        })
+      } catch (err) {
+        console.error("Error fetching enrollment details:", err)
+        setError(err instanceof Error ? err.message : "An error occurred while fetching enrollment details")
+        toast.error("Failed to load enrollment details")
+      } finally {
+        setLoading(false)
+      }
+    }
     fetchEnrollmentDetails()
   }, [id, enrollmentId])
 
