@@ -78,6 +78,7 @@ export function OnboardingModal({ open, onOpenChange }: { open: boolean, onOpenC
   const [imagePreview, setImagePreview] = useState(user?.imageUrl || '')
   const [uploadProgress, setUploadProgress] = useState(0)
   const [isUploading, setIsUploading] = useState(false)
+  const [imgurl, setimgurl] = useState(user?.imageUrl || '')
 
   const form = useForm<z.infer<typeof onboardingSchema>>({
     resolver: zodResolver(onboardingSchema),
@@ -178,7 +179,7 @@ export function OnboardingModal({ open, onOpenChange }: { open: boolean, onOpenC
               reject(data.error || 'Upload failed')
               return
             }
-
+            setimgurl(data.secure_url)
             resolve(data.secure_url)
           } catch (error) {
             reject(error)
@@ -227,7 +228,9 @@ export function OnboardingModal({ open, onOpenChange }: { open: boolean, onOpenC
       clerkId: user.id,
       IsBoarded: true,
       role: 'Student',
+      profilePicture: imgurl,
     }
+    console.log('User Object:', userObject)
 
     try {
       const response = await fetch('/api/onboarding', {
