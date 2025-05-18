@@ -30,7 +30,6 @@ export default async function RootLayout({
               {children}
             </div>
             <Toaster />
-
             <Footer />
           </main>
         </body>

@@ -2,14 +2,20 @@ import { AboutHero } from "@/components/about/AboutHero"
 import { OurStory } from "@/components/about/OurStory"
 import { TestimonialsSection } from "@/components/about/TestimonialsSection"
 import { DevelopersSection } from "@/components/about/DevelopersSection"
+import { MissionSection } from "@/components/about/MissionSection"
+import { FeaturesSection } from "@/components/home/components/FeaturesSection"
+import { TeamSection } from "@/components/about/TeamSection"
 
 export default function AboutPage() {
   return (
     <>
       <main>
         <AboutHero />
+        <MissionSection></MissionSection>
         <OurStory />
+        <FeaturesSection/>
         <TestimonialsSection />
+        <TeamSection/>
         <DevelopersSection />
       </main>
     </>

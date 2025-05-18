@@ -1,7 +1,7 @@
 "use client"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
-import { FiUser, FiSettings, FiLogOut, FiChevronDown, FiShield } from "react-icons/fi"
+import { FiUser, FiSettings, FiLogOut, FiChevronDown, FiShield,FiPhone,FiBook } from "react-icons/fi"
 import { MdSchool } from "react-icons/md"
 import {
   DropdownMenu,
@@ -107,6 +107,7 @@ export function AccountMenu() {
                   href="/about"
                   className="flex items-center gap-2 text-white hover:text-sky-600 font-medium transition-colors"
                 >
+                  <FiBook size={18} />
                   About
                 </Link>
               </motion.div>
@@ -116,6 +117,7 @@ export function AccountMenu() {
                   href="/contactUs"
                   className="flex items-center gap-2 text-white hover:text-sky-600 font-medium transition-colors"
                 >
+                  <FiPhone size={18} />
                   Contact Us
                 </Link>
               </motion.div>
@@ -125,6 +127,7 @@ export function AccountMenu() {
                   href="/collageGallary"
                   className="flex items-center gap-2 text-white hover:text-sky-600 font-medium transition-colors"
                 >
+                  <MdSchool size={18} />
                   Collage Gallery
                 </Link>
               </motion.div>
