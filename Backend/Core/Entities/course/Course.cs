@@ -41,13 +41,6 @@ namespace CollageMangmentSystem.Core.Entities.course
             return PrerequisiteCourses?.Select(c => c.Name).ToList() ?? new List<string>();
         }
 
-        // Assuming the department name is fetched from a related entity
-        public string GetDepartmentName(Department dep)
-        {
-            // Replace this with the actual logic to fetch the department name
-            return dep.Name ?? string.Empty;
-        }
-
         public CourseResponseDto ToCourseResponseDto()
         {
             // Assuming you want to convert this Course entity to a courseResponseDto

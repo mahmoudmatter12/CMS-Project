@@ -13,6 +13,7 @@ namespace CollageMangmentSystem.Core.DTO.Responses.course
         public List<Guid> PrerequisiteCourseIds { get; set; } = new List<Guid>();
         public string? InstructorName { get; set; }
         public string? InstructorEmail { get; set; }
+        public string? InstructorImg { get; set; }
         public required string CourseCode { get; set; }
     }
 }

@@ -112,9 +112,32 @@ public class AdminReposatory : IAdminReposatory
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<User>> GetUsersByRoleAsync(UserRole role)
+    public async Task<IEnumerable<UserResponseDto>> GetUsersByRoleAsync(UserRole role)
     {
-        return await _context.Users.Where(u => u.Role == role).ToListAsync();
+        var users = await _context.Users.Where(u => u.Role == role).ToListAsync();
+
+        var userDtos = new List<UserResponseDto>();
+        foreach (var u in users)
+        {
+            var departmentName = await _departmentRepository.GetDepartmentName(u.DepartmentId);
+            userDtos.Add(
+                new UserResponseDto
+                {
+                    Id = u.Id,
+                    Fullname = u.FullName,
+                    Email = u.Email,
+                    Role = u.GetRoleByIndex((int)u.Role),
+                    DepId = u.DepartmentId ?? Guid.Empty,
+                    ProfilePicture = u.ProfilePicture,
+                    ClerkId = u.ClerkId,
+                    StudentCollageId = u.StudentCollageId,
+                    IsBoarded = u.IsBoarded,
+                    DepName = departmentName,
+                }
+            );
+        }
+
+        return userDtos;
     }
 
     public async Task<IEnumerable<User>> GetUsersByCourseAsync(Guid courseId)
@@ -182,30 +205,7 @@ public class AdminReposatory : IAdminReposatory
     // Courses
     public async Task<IEnumerable<CourseResponseDto>> GetAllCoursesAsync()
     {
-        var courses = await _courseReposatory.GetAllAsync();
-        var courseDtos = courses
-            .Select(c => new CourseResponseDto
-            {
-                Id = c.Id,
-                Name = c.Name,
-                DepartmentId = c.DepartmentId,
-                IsOpen = c.IsOpen,
-                PrerequisiteCourseIds = c.PrerequisiteCourseIds,
-                CourseCode = c.CourseCode,
-                CreditHours = c.CreditHours,
-                Semester = c.Semester,
-            })
-            .ToList();
-        foreach (var courseDto in courseDtos)
-        {
-            courseDto.DepName = await _departmentRepository.GetDepartmentName(
-                courseDto.DepartmentId
-            );
-            courseDto.PrerequisiteCourses = await _courseReposatory.GetCourseNamesByIds(
-                courseDto.PrerequisiteCourseIds
-            );
-        }
-        return courseDtos;
+        return await _courseReposatory.GetAllCoursers();
     }
 
     public async Task<CourseResponseDto?> GetCourseByIdAsync(Guid id)
@@ -229,6 +229,7 @@ public class AdminReposatory : IAdminReposatory
             CreditHours = course.CreditHours,
             Semester = course.Semester,
             InstructorName = course.Instructor?.FullName ?? "Unassigned",
+            InstructorImg = course.Instructor?.ProfilePicture ?? "Unassigned",
         };
         courseDto.DepName = await _departmentRepository.GetDepartmentName(courseDto.DepartmentId);
         courseDto.PrerequisiteCourses = await _courseReposatory.GetCourseNamesByIds(

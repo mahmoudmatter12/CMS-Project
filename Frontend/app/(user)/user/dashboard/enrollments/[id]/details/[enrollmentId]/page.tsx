@@ -14,7 +14,7 @@ import {
   FiRefreshCw,
   FiAlertTriangle,
 } from "react-icons/fi"
-import { FaGraduationCap, FaChalkboardTeacher } from "react-icons/fa"
+import { FaGraduationCap } from "react-icons/fa"
 import { toast } from "sonner"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -23,38 +23,13 @@ import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { EmailInstructorDialog } from "@/components/UserEnrollment/email-instructor-dialog"
-
-interface QuizMetaData {
-  quizId: string
-  quizTitle: string
-  quizDescription: string
-  quizStartDate: Date | null
-  quizEndDate: Date | null
-  quizDuration: number
-  quizCreatorName: string
-}
-
-interface UserEnrollmentInterface {
-  userId: string
-  courseId: string
-  studentName?: string
-  studentEmail?: string
-  courseName?: string
-  courseCode?: string
-  semester?: number
-  creditHours?: number
-  instructorName?: string
-  instructorEmail?: string
-  depName?: string
-  hodName?: string
-  quizMetaData?: QuizMetaData[]
-}
+import type { UserEnrollmentInterFace } from "@/types/types"
+import { InstructorProfileCard } from "@/components/UserEnrollment/instructor-profile-card"
 
 export default function EnrollmentDetailsPage() {
   const router = useRouter()
   const { id, enrollmentId } = useParams<{ id: string; enrollmentId: string }>()
-  const [enrollmentDetails, setEnrollmentDetails] = useState<UserEnrollmentInterface | null>(null)
+  const [enrollmentDetails, setEnrollmentDetails] = useState<UserEnrollmentInterFace | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -71,7 +46,7 @@ export default function EnrollmentDetailsPage() {
         throw new Error(`Failed to fetch enrollment details (Status: ${response.status})`)
       }
 
-      const data: UserEnrollmentInterface = await response.json()
+      const data: UserEnrollmentInterFace = await response.json()
       setEnrollmentDetails(data)
       toast.success("Enrollment details loaded", {
         description: `Details for ${data.courseName} loaded successfully`,
@@ -325,46 +300,16 @@ export default function EnrollmentDetailsPage() {
 
                     <Separator className="bg-gray-700/50" />
 
-                    {/* Instructor Information */}
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-400 mb-3 flex items-center gap-2">
-                        <FaChalkboardTeacher className="text-indigo-400" />
-                        Instructor Information
-                      </h3>
 
-                      <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700/50">
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                          <div className="flex items-center gap-4">
-                            <div className="bg-indigo-500/10 p-3 rounded-full">
-                              <FiUser className="text-indigo-400 text-xl" />
-                            </div>
-                            <div className="space-y-1">
-                              <h4 className="text-white font-medium">
-                                {enrollmentDetails.instructorName || "Not assigned"}
-                              </h4>
-                              {enrollmentDetails.instructorEmail && (
-                                <div className="flex items-center gap-2 text-gray-400">
-                                  <FiMail className="text-indigo-400" size={14} />
-                                  <span>{enrollmentDetails.instructorEmail}</span>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-
-                          {enrollmentDetails.instructorEmail && enrollmentDetails.instructorName && (
-                            <EmailInstructorDialog
-                              instructorName={enrollmentDetails.instructorName}
-                              instructorEmail={enrollmentDetails.instructorEmail}
-                              studentName={enrollmentDetails.studentName || "Student"}
-                              studentEmail={enrollmentDetails.studentEmail || ""}
-                              courseName={enrollmentDetails.courseName || ""}
-                            />
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    <Separator className="bg-gray-700/50" />
+                    {/* Instructor Information - Using the new component */}
+                    <InstructorProfileCard
+                      instructorName={enrollmentDetails.instructorName}
+                      instructorEmail={enrollmentDetails.instructorEmail}
+                      instructorImg={enrollmentDetails.instructorImg}
+                      courseName={enrollmentDetails.courseName}
+                      studentName={enrollmentDetails.studentName}
+                      studentEmail={enrollmentDetails.studentEmail}
+                    />
 
                     {/* Student Information */}
                     <div>
@@ -390,6 +335,8 @@ export default function EnrollmentDetailsPage() {
                         </div>
                       </div>
                     </div>
+
+
                   </CardContent>
                   <CardFooter className="border-t border-gray-700/50 bg-gray-800/30 flex justify-between">
                     <div className="text-sm text-gray-400">
@@ -487,12 +434,11 @@ export default function EnrollmentDetailsPage() {
                                     <Badge
                                       variant="outline"
                                       className={`
-                                        ${
-                                          status === "active"
-                                            ? "bg-green-500/20 text-green-400 border-green-500/30"
-                                            : status === "upcoming"
-                                              ? "bg-amber-500/20 text-amber-400 border-amber-500/30"
-                                              : "bg-gray-500/20 text-gray-400 border-gray-500/30"
+                                        ${status === "active"
+                                          ? "bg-green-500/20 text-green-400 border-green-500/30"
+                                          : status === "upcoming"
+                                            ? "bg-amber-500/20 text-amber-400 border-amber-500/30"
+                                            : "bg-gray-500/20 text-gray-400 border-gray-500/30"
                                         }
                                       `}
                                     >
@@ -505,12 +451,11 @@ export default function EnrollmentDetailsPage() {
                                       variant="outline"
                                       size="sm"
                                       className={`
-                                        ${
-                                          status === "active"
-                                            ? "border-green-700 hover:bg-green-700/20 text-green-400"
-                                            : status === "upcoming"
-                                              ? "border-amber-700 hover:bg-amber-700/20 text-amber-400"
-                                              : "border-gray-700 hover:bg-gray-700/20 text-gray-400"
+                                        ${status === "active"
+                                          ? "border-green-700 hover:bg-green-700/20 text-green-400"
+                                          : status === "upcoming"
+                                            ? "border-amber-700 hover:bg-amber-700/20 text-amber-400"
+                                            : "border-gray-700 hover:bg-gray-700/20 text-gray-400"
                                         }
                                       `}
                                       disabled={status !== "active"}

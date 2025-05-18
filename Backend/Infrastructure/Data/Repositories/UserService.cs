@@ -277,6 +277,8 @@ namespace CollageManagementSystem.Services
                     UserEnrollment.Course?.Instructor?.FullName ?? "No Instructor Name Available",
                 InstructorEmail =
                     UserEnrollment.Course?.Instructor?.Email ?? "No Instructor Email Available",
+                InstructorImg =
+                    UserEnrollment.Course?.Instructor?.ProfilePicture ?? "No Image Available",
                 DepName = UserEnrollment.Course?.Department?.Name ?? "No Department Name Available",
                 HODName =
                     UserEnrollment.Course?.Department?.HDD?.FullName ?? "No HOD Name Available",
