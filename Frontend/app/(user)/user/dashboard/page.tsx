@@ -1,5 +1,5 @@
 import ActionsSection from "@/components/userDashboard/ActionsSection";
-import Blogs from "@/components/userDashboard/Blogs";
+import Blogs from "@/components/userDashboard/Blogs/Blogs";
 import ImportantFormsSection from "@/components/userDashboard/ImportantFormsSection";
 import NotificationsCenter from "@/components/userDashboard/NotificationsCenter";
 import TrackingSection from "@/components/userDashboard/TrackingSection";

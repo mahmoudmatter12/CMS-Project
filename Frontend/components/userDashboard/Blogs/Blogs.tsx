@@ -6,21 +6,21 @@ function Blogs() {
         {
             title: "Understanding Your CGPA",
             description: "Learn how to calculate and interpret your CGPA.",
-            link: "/blogs/cgpa-guide",
+            link: "./blogs-content/cgpa-blog-content.tsx",
             date: "2023-10-01",
             author: "John Doe",
         },
         {
             title: "Effective Study Techniques",
             description: "Explore proven study methods to enhance your learning.",
-            link: "/blogs/study-techniques",
+            link: "./study-techniques-blog-content.tsx",
             date: "2023-10-02",
             author: "Jane Smith"
         },
         {
             title: "Time Management Tips for Students",
             description: "Master the art of time management with these strategies.",
-            link: "/blogs/time-management",
+            link: "./time-management-blog-content.tsx",
             date: "2023-10-03",
             author: "Alice Johnson"
         }

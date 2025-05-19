@@ -130,7 +130,7 @@ export default function EnrolledSubjects() {
                   variant="outline"
                   size="sm"
                   disabled={refreshing}
-                  className="gap-2 border-indigo-700 hover:bg-indigo-700/20"
+                  className="gap-2 bg-indigo-500 border-indigo-700 hover:bg-indigo-700/20"
                 >
                   <FiRefreshCw className={`${refreshing ? "animate-spin" : ""}`} />
                   Refresh

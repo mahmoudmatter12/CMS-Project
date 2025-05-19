@@ -180,7 +180,7 @@ export default function SubjectMainComp() {
                                     variant="outline"
                                     size="sm"
                                     disabled={refreshing}
-                                    className="gap-2 bg-transparent  border-indigo-700 hover:text-green-500 hover:bg-indigo-700/20"
+                                    className="gap-2 bg-transparent  hover:text-indigo-400 border-indigo-700/20 hover:bg-indigo-700/20"
                                 >
                                     <FiRefreshCw className={`${refreshing ? "animate-spin" : ""}`} />
                                     Refresh
@@ -195,7 +195,7 @@ export default function SubjectMainComp() {
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Button variant="outline" size="sm" className="gap-2 bg-transparent hover:text-green-500 border-indigo-700 hover:bg-indigo-700/20">
+                                <Button variant="outline" size="sm" className="gap-2 bg-transparent  hover:text-indigo-400 border-indigo-700/20 hover:bg-indigo-700/20">
                                     <FiDownload />
                                     Export
                                 </Button>

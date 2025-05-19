@@ -136,7 +136,7 @@ export default function EnrollCourseForm({ onSuccess, refresh, courses, children
         ) : (
           <>
             <div className="flex justify-end mb-2">
-              <Button variant="outline" size="sm" onClick={refresh} className="gap-2 border-gray-700">
+              <Button variant="outline" size="sm" onClick={refresh} className="gap-2 bg-indigo-500 hover:bg-indigo-700 border-gray-700">
                 <FiRefreshCw size={14} />
                 Refresh Courses
               </Button>
@@ -223,7 +223,7 @@ export default function EnrollCourseForm({ onSuccess, refresh, courses, children
             </ScrollArea>
 
             <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-gray-700">
-              <Button variant="outline" onClick={() => setIsOpen(false)} className="border-gray-700">
+              <Button variant="outline" onClick={() => setIsOpen(false)} className="bg-indigo-600 border-gray-70 hover:bg-indigo-700">
                 Cancel
               </Button>
               <Button

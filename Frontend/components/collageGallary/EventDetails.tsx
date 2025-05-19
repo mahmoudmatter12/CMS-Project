@@ -98,7 +98,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({
         </div>
 
         <div className="p-6 overflow-y-auto h-[calc(100vh-30vh-6rem)]">
-          <span className="text-sm font-medium bg-amber-600 text-white px-2 py-1 rounded-full mb-2 inline-block">
+          <span className="text-sm font-medium bg-blue-600 text-white px-2 py-1 rounded-full mb-2 inline-block">
             {event.category}
           </span>
           <h2 className="text-2xl font-serif font-bold mb-4 text-gray-900">

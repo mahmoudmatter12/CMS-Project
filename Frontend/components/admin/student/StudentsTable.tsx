@@ -115,7 +115,7 @@ export default function StudentsTable() {
           </div>
 
           <div className="flex items-center gap-2">
-            <FiFilter className="text-gray-400" />
+            <FiFilter className="text-gray-400 " />
             <label htmlFor="programFilter" className="sr-only">Filter by Program</label>
             <select
               id="programFilter"
