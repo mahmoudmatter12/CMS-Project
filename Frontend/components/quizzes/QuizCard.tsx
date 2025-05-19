@@ -164,7 +164,7 @@ const QuizCard = ({
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-
+          
           <Button
             onClick={() => handlePublishQuiz(quiz.id)}
             size="sm"

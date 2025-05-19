@@ -102,7 +102,7 @@ export default function DepartmentMainComp() {
             <FaBuilding className="text-indigo-400 text-3xl" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">Department Management</h1>
+            <h1 className="text-2xl font-bold text-white ">Department Management</h1>
             <p className="text-gray-400 mt-1">Manage academic departments and assign heads of departments.</p>
           </div>
         </div>
@@ -116,7 +116,7 @@ export default function DepartmentMainComp() {
                   variant="outline"
                   size="sm"
                   disabled={refreshing}
-                  className="gap-2 border-indigo-700 hover:bg-indigo-700/20"
+                  className="gap-2 bg-transparent  hover:text-indigo-400 border-indigo-700/20 hover:bg-indigo-700/20"
                 >
                   <FiRefreshCw className={`${refreshing ? "animate-spin" : ""}`} />
                   Refresh
@@ -131,7 +131,7 @@ export default function DepartmentMainComp() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2 border-indigo-700 hover:bg-indigo-700/20">
+                <Button variant="outline" size="sm" className="gap-2 bg-transparent  hover:text-indigo-400 border-indigo-700/20 hover:bg-indigo-700/20">
                   <FiDownload />
                   Export
                 </Button>
