@@ -124,23 +124,25 @@ export function MultiSelect({ options, selectedValues, onChange, label, error, i
 
             <div className="p-2 border-t border-gray-700 flex justify-between">
               <Button
-                variant="outline"
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onChange([])
-                }}
+              variant="destructive"
+              size="sm"
+              className="bg-red-600 hover:bg-red-700 text-white"
+              onClick={(e) => {
+                e.stopPropagation()
+                onChange([])
+              }}
               >
-                Clear All
+              Clear All
               </Button>
               <Button
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setIsOpen(false)
-                }}
+              size="sm"
+              className="bg-green-600 hover:bg-green-700 text-white"
+              onClick={(e) => {
+                e.stopPropagation()
+                setIsOpen(false)
+              }}
               >
-                Done
+              Done
               </Button>
             </div>
           </div>

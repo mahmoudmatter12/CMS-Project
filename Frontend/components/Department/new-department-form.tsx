@@ -335,7 +335,7 @@ export default function NewDepartmentForm({
               type="button"
               onClick={() => handleOpenChange(false)}
               variant="outline"
-              className="border-gray-700 text-white hover:bg-gray-800"
+              className="bg-red-600 hover:bg-red-700 text-white border border-red-600"
             >
               Cancel
             </Button>

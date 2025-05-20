@@ -188,7 +188,7 @@ export default function NewSubjectForm({
                             name="departmentId"
                             control={control}
                             render={({ field }) => (
-                                <select id="departmentId" {...field} className="w-full p-2 border rounded-lg text-white min-h-[50px]">
+                                <select id="departmentId" {...field} className="w-full p-2 border rounded-lg text-indigo-500 min-h-[50px] font-bold">
                                     <option value="">Select a department</option>
                                     {isLoadingDepartments ? (
                                         <option value="" disabled>
@@ -353,14 +353,17 @@ export default function NewSubjectForm({
                     </div>
 
                     <div className="flex justify-end gap-2 pt-4">
-                        <Button type="button" onClick={() => handleOpenChange(false)} className="gap-2 cursor-pointer border-1">
+                        <Button
+                            type="button"
+                            onClick={() => handleOpenChange(false)}
+                            className="gap-2 cursor-pointer  bg-red-600 hover:bg-red-700 text-white border border-red-600"
+                        >
                             Cancel
                         </Button>
                         <Button
                             type="submit"
                             disabled={isSubmitting || (!isEdit && !isDirty)}
-                            variant="outline"
-                            className="cursor-pointer hover:bg-gray-900 text-black"
+                            className="cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white"
                             onClick={() => {
                                 if (isEdit) {
                                     toast("Updating subject...")
