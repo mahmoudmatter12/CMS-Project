@@ -4,10 +4,10 @@ import { teamMembersData, TeamMember } from '../../../data/teamMembers'; // Impo
 
 export const TeamSection: React.FC = () => {
     return (
-        <section className="py-12 bg-gray-50 sm:py-16 lg:py-20">
+        <section className="py-12 sm:py-16 lg:py-20">
             <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div className="text-center">
-                    <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl lg:text-5xl">
+                    <h2 className="text-3xl font-bold tracking-tight text-indigo-700 sm:text-4xl lg:text-5xl">
                         Meet Our Expert Team
                     </h2>
                     <p className="mt-4 text-lg leading-7 text-gray-600 sm:mt-6">
