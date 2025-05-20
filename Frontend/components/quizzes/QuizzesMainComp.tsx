@@ -159,7 +159,7 @@ export default function QuizzesMainComp({ courses }: QuizzesMainCompProps) {
                   variant="outline"
                   size="sm"
                   disabled={refreshing}
-                  className="gap-2 border-indigo-700 hover:bg-indigo-700/20"
+                  className="gap-2 bg-transparent  hover:text-indigo-400 border-indigo-700/20 hover:bg-indigo-700/20"
                 >
                   <FiRefreshCw className={`${refreshing ? "animate-spin" : ""}`} />
                   Refresh
@@ -174,7 +174,7 @@ export default function QuizzesMainComp({ courses }: QuizzesMainCompProps) {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2 border-indigo-700 hover:bg-indigo-700/20">
+                <Button variant="outline" size="sm" className="gap-2 bg-transparent  hover:text-indigo-400 border-indigo-700/20 hover:bg-indigo-700/20">
                   <FiDownload />
                   Export
                 </Button>
