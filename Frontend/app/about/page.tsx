@@ -15,7 +15,6 @@ export default function AboutPage() {
         <OurStory />
         <FeaturesSection/>
         <TestimonialsSection />
-        <TeamSection/>
         <DevelopersSection />
       </main>
     </>
