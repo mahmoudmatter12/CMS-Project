@@ -171,7 +171,7 @@ const QuizCard = ({
             className={`ml-1 ${
               quiz.isActive
                 ? "bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 border-rose-500/30"
-                : "bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border-emerald-500/30"
+                : "bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border-emerald-500/30 cursor-pointer"
             }`}
           >
             {quiz.isActive ? "Unpublish" : "Publish"}

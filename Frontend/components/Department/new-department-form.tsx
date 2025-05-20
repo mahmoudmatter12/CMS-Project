@@ -180,7 +180,7 @@ export default function NewDepartmentForm({
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {children || (
-          <Button className="flex items-center gap-2">
+          <Button className="flex items-center gap-2 cursor-pointer">
             {isEdit ? (
               <>
                 <FiEdit2 size={16} /> Edit Department
