@@ -61,10 +61,10 @@ The backend is built with **ASP.NET Core** using C#. It follows a layered archit
 
 ### 🛠️ Tech Stack
 
-* **ASP.NET Core 6/7**
+* **ASP.NET Core 9**
 * **Entity Framework Core**
 * **C#**
-* **SQL Server** (or any preferred DB)
+* **PostgreSQL**
 * **REST API**
 
 ### 🚀 Getting Started (Backend)
@@ -87,6 +87,15 @@ dotnet run
 * 🗓️ Timetable and calendar management
 * 📝 Assignment and grading support
 * 🛡️ Authentication & Authorization (Planned/Implemented as needed)
+
+---
+## Development Team Members
+
+1. Mohamed Ibrahim Omar
+2. Ahmed Khairy Mesbah
+3. Mahmoud Gamal Talaat
+4. Banan Wael Elsaid
+5. Hanan Hany Fathy
 
 ---
 
