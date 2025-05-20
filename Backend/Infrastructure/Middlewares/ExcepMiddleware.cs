@@ -8,7 +8,10 @@ namespace CollageMangmentSystem.Infrastructure.Middlewares
         private readonly RequestDelegate _next;
         private readonly ILogger<GlobalExceptionMiddleware> _logger;
 
-        public GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExceptionMiddleware> logger)
+        public GlobalExceptionMiddleware(
+            RequestDelegate next,
+            ILogger<GlobalExceptionMiddleware> logger
+        )
         {
             _next = next;
             _logger = logger;
@@ -33,7 +36,7 @@ namespace CollageMangmentSystem.Infrastructure.Middlewares
             {
                 status = 500,
                 message = "An unexpected error occurred from the middleware",
-                detail = exception.Message
+                detail = exception.Message,
             };
 
             var result = JsonSerializer.Serialize(response);

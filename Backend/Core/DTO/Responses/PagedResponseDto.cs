@@ -1,4 +1,3 @@
-
 namespace CollageMangmentSystem.Core.DTO.Responses.user
 {
     public class PagedResponse<T>
@@ -8,6 +7,5 @@ namespace CollageMangmentSystem.Core.DTO.Responses.user
         public int PageSize { get; set; }
         public int TotalCount { get; set; }
         public int TotalPages { get; set; }
-
     }
 }
