@@ -62,10 +62,9 @@ export default function EnrollmentDetailsPage() {
   }
 
   useEffect(() => {
-   
-    
     fetchEnrollmentDetails()
-  }, [id, enrollmentId])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Format date function
   const formatDate = (dateString: string | null) => {

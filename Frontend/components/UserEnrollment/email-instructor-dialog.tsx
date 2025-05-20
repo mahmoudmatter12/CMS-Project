@@ -66,7 +66,7 @@ export function EmailInstructorDialog({
   })
 
   // Handle form submission
-  const onSubmit = async (data: EmailFormValues) => {
+  const onSubmit = async () => {
     setIsSending(true)
 
     try {

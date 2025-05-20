@@ -148,6 +148,20 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddCors(options =>
 {
+<<<<<<< HEAD
+    options.AddPolicy(
+        "AllowFrontend",
+        policy =>
+        {
+            policy
+                .WithOrigins("http://localhost:3000")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials() // Important for cookies
+                .SetPreflightMaxAge(TimeSpan.FromHours(1));
+        }
+    );
+=======
     options.AddPolicy("AllowFrontend", policy =>
     {
         policy.WithOrigins(
@@ -159,6 +173,7 @@ builder.Services.AddCors(options =>
               .AllowCredentials() // Important for cookies
               .SetPreflightMaxAge(TimeSpan.FromHours(1));
     });
+>>>>>>> 304d8f66223aac155e1de89af39099cbb7baf32d
 });
 
 var app = builder.Build();

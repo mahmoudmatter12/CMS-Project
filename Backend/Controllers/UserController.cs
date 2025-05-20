@@ -71,5 +71,17 @@ namespace CollageMangmentSystem.Controllers
             }
             return Ok(enrollmentDetails);
         }
+
+        [HttpGet("/user/{userId}/profile")]
+        public async Task<> GetUserProfileDetails(Guid userId){
+            var profileDetails =  await _userService.GetUserProfileDetails(
+                userId
+            );
+            if (profileDetails == null)
+            {
+                return NotFound(new { Message = "profileDetails details not found" });
+            }
+            return ok(profileDetails)
+        }
     }
 }

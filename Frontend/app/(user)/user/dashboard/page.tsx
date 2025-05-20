@@ -13,7 +13,7 @@ export default function DashboardPage() {
       <UserDashBoardHeroSection />
 
 
-     
+
       <hr className="my-8 border-white " />
       <TrackingSection />
 
@@ -25,12 +25,13 @@ export default function DashboardPage() {
       <Blogs />
       <hr className="my-8 border-white " />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
         {/* Recent Notifications */}
         <NotificationsCenter />
         {/* Recent Activity */}
         {/* <RecentActivity /> */}
       </div>
+      <hr className="my-8 border-white " />
 
       {/* All Features */}
       <ActionsSection />

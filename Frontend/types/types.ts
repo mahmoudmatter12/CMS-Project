@@ -94,6 +94,31 @@ export enum QuestionType {
   SHORT_ANSWER = "SHORT_ANSWER",
 }
 
+export interface correctQuiz {
+  quizId: string;
+  answers: Answer[];
+}
+
+export interface Answer {
+  questionId: string;
+  selectedAnswerIndex: number;
+}
+
+export interface QuizResult {
+  quizId: string;
+  totalMarks: number;
+  obtainedMarks: number;
+  isPassed: boolean;
+  passingMarks: number;
+  questionsResult: QuestionResult[];
+}
+
+export interface QuestionResult {
+  questionId: string;
+  isCorrect: boolean;
+  awardedMarks: number;
+}
+
 export interface UserEnrollmentsResponse {
   message: string;
   userName: string;
