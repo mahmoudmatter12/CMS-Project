@@ -180,7 +180,7 @@ export default function SubjectMainComp() {
                                     variant="outline"
                                     size="sm"
                                     disabled={refreshing}
-                                    className="gap-2 bg-transparent  hover:text-indigo-400 border-indigo-700/20 hover:bg-indigo-700/20"
+                                    className="gap-2 bg-transparent  hover:text-indigo-400 border-indigo-700/20 hover:bg-indigo-700/20 cursor-pointer"
                                 >
                                     <FiRefreshCw className={`${refreshing ? "animate-spin" : ""}`} />
                                     Refresh
@@ -195,7 +195,7 @@ export default function SubjectMainComp() {
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Button variant="outline" size="sm" className="gap-2 bg-transparent  hover:text-indigo-400 border-indigo-700/20 hover:bg-indigo-700/20">
+                                <Button variant="outline" size="sm" className="cursor-pointer gap-2 bg-transparent  hover:text-indigo-400 border-indigo-700/20 hover:bg-indigo-700/20">
                                     <FiDownload />
                                     Export
                                 </Button>
@@ -280,17 +280,17 @@ export default function SubjectMainComp() {
                             />
                         </div>
 
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 cursor-pointer">
                             <div className="flex items-center gap-2">
                                 <Select value={filter} onValueChange={(value) => setFilter(value as "all" | "open" | "closed")}>
-                                    <SelectTrigger className="w-[180px] bg-gray-800 border-gray-700 text-white">
+                                    <SelectTrigger className="w-[180px] bg-gray-800 border-gray-700 text-white cursor-pointer">
                                         <FiFilter className="mr-2 text-gray-400" />
                                         <SelectValue placeholder="Filter subjects" />
                                     </SelectTrigger>
                                     <SelectContent className="bg-gray-800 border-gray-700 text-white">
-                                        <SelectItem value="all">All Subjects</SelectItem>
-                                        <SelectItem value="open">Open Only</SelectItem>
-                                        <SelectItem value="closed">Closed Only</SelectItem>
+                                        <SelectItem value="all" className="cursor-pointer">All Subjects</SelectItem>
+                                        <SelectItem value="open" className="cursor-pointer">Open Only</SelectItem>
+                                        <SelectItem value="closed" className="cursor-pointer">Closed Only</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -300,7 +300,7 @@ export default function SubjectMainComp() {
                                     variant="ghost"
                                     size="icon"
                                     onClick={() => setViewMode("cards")}
-                                    className={`rounded-md ${viewMode === "cards" ? "bg-indigo-700/30 text-indigo-300" : ""}`}
+                                    className={`rounded-md ${viewMode === "cards" ? "bg-indigo-700/30 text-indigo-300" : ""} cursor-pointer`}
                                     title="Card View"
                                 >
                                     <FiGrid className="h-4 w-4" />
@@ -309,7 +309,7 @@ export default function SubjectMainComp() {
                                     variant="ghost"
                                     size="icon"
                                     onClick={() => setViewMode("table")}
-                                    className={`rounded-md ${viewMode === "table" ? "bg-indigo-700/30 text-indigo-300" : ""}`}
+                                    className={`rounded-md ${viewMode === "table" ? "bg-indigo-700/30 text-indigo-300" : ""} cursor-pointer`}
                                     title="Table View"
                                 >
                                     <FiList className="h-4 w-4" />

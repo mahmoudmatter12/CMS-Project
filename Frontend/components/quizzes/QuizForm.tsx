@@ -115,7 +115,6 @@ export function QuizForm({ courses, defaultValues, isEdit = false, onSuccess, ch
                 creatorId: user?.id || data.creatorId,
             }
 
-           
 
             const endpoint = isEdit ? `/api/quizzes/${defaultValues?.id}/update` : "http://localhost:5168/api/Quiz/create"
 
@@ -717,6 +716,7 @@ export function QuizForm({ courses, defaultValues, isEdit = false, onSuccess, ch
                                                                                 checked={Number(field.value) === aIndex}
                                                                                 onChange={() => field.onChange(aIndex)}
                                                                                 className="h-4 w-4 text-indigo-600"
+                                                                                title={`Select option ${aIndex + 1} as correct answer`}
                                                                             />
                                                                         )}
                                                                     />

@@ -117,7 +117,7 @@ export default function DepartmentMainComp() {
                   variant="outline"
                   size="sm"
                   disabled={refreshing}
-                  className="gap-2 bg-transparent  hover:text-indigo-400 border-indigo-700/20 hover:bg-indigo-700/20"
+                  className="gap-2 bg-transparent  hover:text-indigo-400 border-indigo-700/20 hover:bg-indigo-700/20 cursor-pointer"
                 >
                   <FiRefreshCw className={`${refreshing ? "animate-spin" : ""}`} />
                   Refresh
@@ -132,7 +132,7 @@ export default function DepartmentMainComp() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2 bg-transparent  hover:text-indigo-400 border-indigo-700/20 hover:bg-indigo-700/20">
+                <Button variant="outline" size="sm" className="gap-2 bg-transparent  hover:text-indigo-400 border-indigo-700/20 hover:bg-indigo-700/20 cursor-pointer">
                   <FiDownload />
                   Export
                 </Button>
@@ -227,7 +227,7 @@ export default function DepartmentMainComp() {
                   variant="ghost"
                   size="icon"
                   onClick={() => setViewMode("cards")}
-                  className={`rounded-md ${viewMode === "cards" ? "bg-indigo-700/30 text-indigo-300" : ""}`}
+                  className={`rounded-md ${viewMode === "cards" ? "bg-indigo-700/30 text-indigo-300" : ""} cursor-pointer`}
                   title="Card View"
                 >
                   <FiGrid className="h-4 w-4" />
@@ -236,7 +236,7 @@ export default function DepartmentMainComp() {
                   variant="ghost"
                   size="icon"
                   onClick={() => setViewMode("table")}
-                  className={`rounded-md ${viewMode === "table" ? "bg-indigo-700/30 text-indigo-300" : ""}`}
+                  className={`rounded-md ${viewMode === "table" ? "bg-indigo-700/30 text-indigo-300" : ""} cursor-pointer`}
                   title="Table View"
                 >
                   <FiList className="h-4 w-4" />
