@@ -4,7 +4,6 @@ import { TestimonialsSection } from "@/components/about/TestimonialsSection"
 import { DevelopersSection } from "@/components/about/DevelopersSection"
 import { MissionSection } from "@/components/about/MissionSection"
 import { FeaturesSection } from "@/components/home/components/FeaturesSection"
-import { TeamSection } from "@/components/about/TeamSection"
 
 export default function AboutPage() {
   return (
