@@ -148,18 +148,17 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(
-        "AllowFrontend",
-        policy =>
-        {
-            policy
-                .WithOrigins("http://localhost:3001", "https://yourproductiondomain.com")
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials() // Important for cookies
-                .SetPreflightMaxAge(TimeSpan.FromHours(1));
-        }
-    );
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins(
+                "http://localhost:3000",
+                "https://yourproductiondomain.com"
+              )
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials() // Important for cookies
+              .SetPreflightMaxAge(TimeSpan.FromHours(1));
+    });
 });
 
 var app = builder.Build();
