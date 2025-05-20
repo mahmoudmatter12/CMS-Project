@@ -309,7 +309,7 @@ export default function QuizzesMainComp({ courses }: QuizzesMainCompProps) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="h-[600px] overflow-y-auto"
+              className="h-[450px] overflow-y-auto"
             >
               {loading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
@@ -364,7 +364,7 @@ export default function QuizzesMainComp({ courses }: QuizzesMainCompProps) {
               className="overflow-auto"
               style={{ maxHeight: "600px" }}
             >
-              <div className="p-6 min-w-[800px]">
+              <div className="p-6 min-w-[600px]">
                 <div className="rounded-lg border border-gray-700 overflow-hidden">
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-gray-400">
