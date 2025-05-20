@@ -206,7 +206,7 @@ export function QuizForm({ courses, defaultValues, isEdit = false, onSuccess, ch
         >
             <DialogTrigger asChild>
                 {children || (
-                    <Button className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white">
+                    <Button className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer">
                         <Plus size={16} />
                         {isEdit ? "Edit Quiz" : "Create Quiz"}
                     </Button>
