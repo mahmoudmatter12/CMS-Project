@@ -180,7 +180,7 @@ export default function NewDepartmentForm({
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {children || (
-          <Button className="flex items-center gap-2 cursor-pointer">
+          <Button className="flex items-center gap-2 cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white">
             {isEdit ? (
               <>
                 <FiEdit2 size={16} /> Edit Department
@@ -335,7 +335,7 @@ export default function NewDepartmentForm({
               type="button"
               onClick={() => handleOpenChange(false)}
               variant="outline"
-              className="border-gray-700 text-white hover:bg-gray-800"
+              className="bg-red-600 hover:bg-red-700 text-white border border-red-600"
             >
               Cancel
             </Button>
