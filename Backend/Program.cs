@@ -1,33 +1,34 @@
+using System.Text;
+using System.Threading.RateLimiting;
+using CollageManagementSystem.Core;
+using CollageManagementSystem.Core.Entities.userEnrollments;
+using CollageManagementSystem.Services;
+using CollageManagementSystem.Services.Auth;
 using CollageMangmentSystem.Core.Interfaces;
 using CollageMangmentSystem.Infrastructure.Data;
 using CollageMangmentSystem.Infrastructure.Data.Repositories;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.RateLimiting;
-using System.Threading.RateLimiting;
-using CollageManagementSystem.Services.Auth;
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using CollageManagementSystem.Services;
-using Microsoft.AspNetCore.CookiePolicy;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using CollageMangmentSystem.Core.Entities.course;
-using CollageManagementSystem.Core.Entities.userEnrollments;
 using CollageMangmentSystem.Infrastructure.Middlewares;
-using CollageManagementSystem.Core;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.CookiePolicy;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(); 
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
+
 // Add infrastructure services
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Postgres"),
-                      o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery))
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("Postgres"),
+        o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
+    )
 );
 
 // Register repositories
@@ -45,7 +46,6 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
     options.MinimumSameSitePolicy = SameSiteMode.None;
     options.Secure = CookieSecurePolicy.Always; // Force secure cookies
     options.HttpOnly = HttpOnlyPolicy.Always;
-
 });
 
 // Configure authentication cookies
@@ -75,25 +75,32 @@ builder.Services.Configure<CookieOptions>(options =>
 // Configure rate limiting
 builder.Services.AddRateLimiter(options =>
 {
-    options.AddFixedWindowLimiter("FixedWindowPolicy", opt =>
-    {
-        opt.Window = TimeSpan.FromSeconds(10);
-        opt.PermitLimit = 5;
-        opt.QueueLimit = 0;
-        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-    });
+    options.AddFixedWindowLimiter(
+        "FixedWindowPolicy",
+        opt =>
+        {
+            opt.Window = TimeSpan.FromSeconds(10);
+            opt.PermitLimit = 5;
+            opt.QueueLimit = 0;
+            opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        }
+    );
 
-    options.AddFixedWindowLimiter("StrictPolicy", opt =>
-    {
-        opt.Window = TimeSpan.FromMinutes(10);
-        opt.PermitLimit = 10;
-        opt.QueueLimit = 0;
-    });
+    options.AddFixedWindowLimiter(
+        "StrictPolicy",
+        opt =>
+        {
+            opt.Window = TimeSpan.FromMinutes(10);
+            opt.PermitLimit = 10;
+            opt.QueueLimit = 0;
+        }
+    );
 
     options.OnRejected = (context, _) =>
     {
-        context.HttpContext.Response.Headers["Retry-After"] =
-            (600 - DateTime.Now.Second % 600).ToString();
+        context.HttpContext.Response.Headers["Retry-After"] = (
+            600 - DateTime.Now.Second % 600
+        ).ToString();
         return new ValueTask();
     };
 
@@ -102,37 +109,39 @@ builder.Services.AddRateLimiter(options =>
 
 // Configure JWT authentication
 var jwtSettings = builder.Configuration.GetSection("Jwt");
-var secretKey = jwtSettings["SecretKey"] ?? throw new InvalidOperationException("SecretKey is not configured");
+var secretKey =
+    jwtSettings["SecretKey"] ?? throw new InvalidOperationException("SecretKey is not configured");
 var key = Encoding.ASCII.GetBytes(secretKey);
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
+builder
+    .Services.AddAuthentication(options =>
     {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(key),
-        ValidateIssuer = false,
-        ValidateAudience = false,
-        ValidateLifetime = true,
-        ClockSkew = TimeSpan.Zero
-    };
-    options.Events = new JwtBearerEvents
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
     {
-        OnMessageReceived = context =>
+        options.TokenValidationParameters = new TokenValidationParameters
         {
-            // Try to get token from cookie first
-            context.Token = context.Request.Cookies["accessToken"] ??
-                            context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-            return Task.CompletedTask;
-        }
-    };
-});
-
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero,
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                // Try to get token from cookie first
+                context.Token =
+                    context.Request.Cookies["accessToken"]
+                    ?? context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                return Task.CompletedTask;
+            },
+        };
+    });
 
 // Register application services
 builder.Services.AddScoped<ITokenService, TokenService>();
@@ -154,37 +163,44 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 app.UseCors("AllowFrontend");
+
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.Use(async (context, next) =>
-{
-    if (context.Request.Path.StartsWithSegments("/swagger"))
+app.Use(
+    async (context, next) =>
     {
-        await next(context);
-        return;
-    }
+        if (context.Request.Path.StartsWithSegments("/swagger"))
+        {
+            await next(context);
+            return;
+        }
 
-    await next(context); // Proceed to the next middleware
-});
+        await next(context); // Proceed to the next middleware
+    }
+);
 
 app.UseHttpsRedirection();
 
-app.UseCookiePolicy(new CookiePolicyOptions
-{
-    MinimumSameSitePolicy = SameSiteMode.None,
-    Secure = CookieSecurePolicy.SameAsRequest,
-    HttpOnly = HttpOnlyPolicy.Always
-});
+app.UseCookiePolicy(
+    new CookiePolicyOptions
+    {
+        MinimumSameSitePolicy = SameSiteMode.None,
+        Secure = CookieSecurePolicy.SameAsRequest,
+        HttpOnly = HttpOnlyPolicy.Always,
+    }
+);
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
+
 // Use middleware with factory approach
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
+
 // app.UseMiddleware<AuthorizationMiddleware>(); // Role-based authorization
 app.MapControllers();
 
