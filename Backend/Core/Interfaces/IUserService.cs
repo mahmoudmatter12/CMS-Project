@@ -29,6 +29,6 @@ namespace CollageManagementSystem.Services
             Guid userId,
             Guid enrollmentId
         );
-        Task<UserDetailsResponseDto> GetUserProfileDetails(Guid userId);
+        // Task<UserDetailsResponseDto> GetUserProfileDetails(Guid userId);
     }
 }
