@@ -11,7 +11,7 @@ export default function DashboardPage() {
       {/* Welcome Header */}
 
       <UserDashBoardHeroSection />
-
+      {/* <AIChatInterface /> */}
 
 
       <hr className="my-8 border-white " />
@@ -35,7 +35,6 @@ export default function DashboardPage() {
 
       {/* All Features */}
       <ActionsSection />
-
 
     </div>
   );
