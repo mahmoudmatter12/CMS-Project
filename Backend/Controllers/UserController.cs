@@ -72,6 +72,5 @@ namespace CollageMangmentSystem.Controllers
             return Ok(enrollmentDetails);
         }
 
-        
     }
 }
