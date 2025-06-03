@@ -2,40 +2,40 @@ import { Event } from "../types/types";
 export const Developers = [
   {
     name: "Mahmoud Matter",
-    role: "Full stack",
+    role: "Full stack Developer",
     imgUrl: "/acpc.jpg",
-    github: "https://github.com/johndoe",
-    linkedin: "https://linkedin.com/in/johndoe",
+    github: "https://github.com/mahmoudmatter12",
+    linkedin: "https://www.linkedin.com/in/mahmoudmatter",
   },
   {
     name: "Ahmed khairy",
-    role: "Full stack",
+    role: "Full stack Developer",
     imgUrl: "/kahiry.jpg",
-    github: "https://github.com/janesmith",
-    linkedin: "https://linkedin.com/in/janesmith",
+    github: "http://www.linkedin.com/in/Ahmedkhairy010",
+    linkedin: "http://www.linkedin.com/in/Ahmedkhairy010",
   },
   {
-    name: "Mohamed Ibrahum",
-    role: "Full stack",
+    name: "Mohamed Ibrahim",
+    role: "Full stack Developer",
     imgUrl: "/hima.jpg",
-    github: "https://github.com/peterjones",
-    linkedin: "https://linkedin.com/in/peterjones",
+    github: "https://github.com/Mohamediibra7im",
+    linkedin: "https://www.linkedin.com/in/mohammed-ibra7im",
   },
   {
     name: "Hanan Hany Fathy",
-    role: "Full stack",
+    role: "Full stack Developer",
     imgUrl: "/hana.jpeg",
-    github: "https://github.com/alicebrown",
-    linkedin: "https://linkedin.com/in/alicebrown",
+    github: "https://github.com/Hanan-Hany",
+    linkedin: "https://www.linkedin.com/in/hanan-hany-fathy-b1b13027b",
   },
   {
     name: "Banan Wael Alsayed",
-    role: "Full stack",
+    role: "Full stack Developer",
     imgUrl: "/banan.jpeg",
-    github: "https://github.com/bobwilliams",
-    linkedin: "https://linkedin.com/in/bobwilliams",
+    github: "https://github.com/BANANWAEL",
+    linkedin: "https://www.linkedin.com/in/banan-wael",
   },
-]
+];
 
 
 export const mockEvents: Event[] = [
@@ -218,5 +218,39 @@ export const mockEvents: Event[] = [
       "https://images.pexels.com/photos/3153207/pexels-photo-3153207.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
       "https://images.pexels.com/photos/3205568/pexels-photo-3205568.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
     ]
+  },
+];
+
+export interface Sponsor {
+  id: number;
+  name: string;
+  logo: string;
+}
+
+export const sponsors: Sponsor[] = [
+  {
+    id: 1,
+    name: "Nile University",
+    logo: "https://d3moma7wl9.ufs.sh/f/xRZhVxWEJbFMZ8h7mTIFiV7W0rZCTa812BcI3HnSovpyGmPu",
+  },
+  {
+    id: 2,
+    name: "Cairo University",
+    logo: "https://d3moma7wl9.ufs.sh/f/xRZhVxWEJbFME0QjDRUnNYb4i5CeGA81RtDg3L9r7hPFwK0x",
+  },
+  {
+    id: 3,
+    name: "Helwan University",
+    logo: "https://d3moma7wl9.ufs.sh/f/xRZhVxWEJbFMY27wnVXyfz6Mm2PYwX1GIl8K0pg7hWVdBZy3",
+  },
+  {
+    id: 4,
+    name: "Helwan National University",
+    logo: "https://d3moma7wl9.ufs.sh/f/xRZhVxWEJbFMVrUCrgSUTp2LasoMZS09FeVKOXDbEy6wkjR5",
+  },
+  {
+    id: 5,
+    name: "Ain Shams University",
+    logo: "https://d3moma7wl9.ufs.sh/f/xRZhVxWEJbFMrRJAjsfzWN9TU3Vd0gvfMxOqa1CRD8I64tH2",
   },
 ];
