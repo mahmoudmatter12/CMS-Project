@@ -13,7 +13,7 @@ export function OurStory() {
 
             <div className="space-y-6 text-gray-300">
               <p>
-                Founded in 2015, our College Management System began with a simple vision: to eliminate the
+                Founded in 2023, our College Management System began with a simple vision: to eliminate the
                 administrative burden that distracts educational institutions from their core mission of teaching and
                 learning.
               </p>
@@ -50,15 +50,15 @@ export function OurStory() {
 
             <div className="mt-8 grid grid-cols-3 gap-4">
               <div className="bg-white/5 p-4 rounded-lg border border-gray-800 text-center">
-                <p className="text-3xl font-bold text-cyan-400 mb-1">2015</p>
+                <p className="text-3xl font-bold text-cyan-400 mb-1">2023</p>
                 <p className="text-sm text-gray-400">Founded</p>
               </div>
               <div className="bg-white/5 p-4 rounded-lg border border-gray-800 text-center">
-                <p className="text-3xl font-bold text-cyan-400 mb-1">500+</p>
+                <p className="text-3xl font-bold text-cyan-400 mb-1">20+</p>
                 <p className="text-sm text-gray-400">Institutions</p>
               </div>
               <div className="bg-white/5 p-4 rounded-lg border border-gray-800 text-center">
-                <p className="text-3xl font-bold text-cyan-400 mb-1">30+</p>
+                <p className="text-3xl font-bold text-cyan-400 mb-1">10+</p>
                 <p className="text-sm text-gray-400">Countries</p>
               </div>
             </div>

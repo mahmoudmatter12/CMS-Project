@@ -78,6 +78,7 @@ export function DevelopersSection() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-500 hover:text-blue-500 transition-colors"
+                  title={`GitHub profile of ${developer.name}`}
                 >
                   <Github className="w-4 h-4" />
                 </a>
@@ -86,6 +87,7 @@ export function DevelopersSection() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-500 hover:text-blue-500 transition-colors"
+                  title={`LinkedIn profile of ${developer.name}`}
                 >
                   <Linkedin className="w-4 h-4" />
                 </a>

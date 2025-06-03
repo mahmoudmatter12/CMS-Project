@@ -203,9 +203,11 @@ export default function Contact() {
                     <div className="flex justify-center">
                         <AnimatedTooltip items={teamMembers} />
                     </div>
-                </motion.div>
 
+                </motion.div>
+                
             </div>
+            
         </section>
     )
 }

@@ -32,10 +32,13 @@ const nextConfig: NextConfig = {
         hostname: "images.pexels.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "pin.it",
+        pathname: "/**",
+      },
     ],
   },
 };
-
-module.exports = nextConfig;
 
 export default nextConfig;
