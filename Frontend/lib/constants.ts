@@ -11,7 +11,7 @@ export const Developers = [
     name: "Ahmed khairy",
     role: "Full stack Developer",
     imgUrl: "/kahiry.jpg",
-    github: "https://github.com/Ahmedkhairy0106/",
+    github: "https://github.com/Ahmedkhairy0106",
     linkedin: "http://www.linkedin.com/in/Ahmedkhairy010",
   },
   {
