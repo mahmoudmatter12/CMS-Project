@@ -69,7 +69,7 @@ The backend is built with **ASP.NET Core** using C#. It follows a layered archit
 
 ### 🚀 Getting Started (Backend)
 
-Make sure you have .NET SDK installed.
+Make sure you have .NET SDK installed
 
 ```bash
 dotnet restore
