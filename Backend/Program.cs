@@ -153,7 +153,7 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy
-                .WithOrigins("http://localhost:3000")
+                .WithOrigins("http://localhost:3000", "https://campus-core.vercel.app")
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials() // Important for cookies
@@ -203,5 +203,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5168";
+app.Urls.Add($"http://0.0.0.0:{port}");
 
 app.Run();
