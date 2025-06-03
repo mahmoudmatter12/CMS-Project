@@ -4,7 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
     // Authenticate the request
@@ -18,8 +18,8 @@ export async function DELETE(
 
     const client = await clerkClient();
 
-    // Validate the student ID
-    const studentId = await params.id;
+    // Await the params and validate the student ID
+    const { id: studentId } = await params;
     if (!studentId || typeof studentId !== "string") {
       return NextResponse.json(
         { error: "Invalid student ID" },
