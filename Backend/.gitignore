@@ -22,8 +22,6 @@ TestResults/
 # Migrations/
 
 # App settings (if secrets inside)
-appsettings.json
-appsettings.*.json
 
 # Config
 .config/
