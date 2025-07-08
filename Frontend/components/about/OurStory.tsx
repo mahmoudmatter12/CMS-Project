@@ -13,7 +13,7 @@ export function OurStory() {
 
             <div className="space-y-6 text-gray-300">
               <p>
-                Founded in 2023, our College Management System began with a simple vision: to eliminate the
+                Founded in 2023, our College Management System Named == Brainy Scholarnet College == began with a simple vision: to eliminate the
                 administrative burden that distracts educational institutions from their core mission of teaching and
                 learning.
               </p>

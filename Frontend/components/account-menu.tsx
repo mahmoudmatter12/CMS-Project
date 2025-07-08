@@ -65,7 +65,7 @@ export function AccountMenu() {
                 <MdSchool className="text-xl" />
               </motion.div>
               <span className="text-xl font-bold bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent">
-                College Management System
+                Brainy Scholarnet College
               </span>
             </Link>
           </motion.div>
@@ -89,7 +89,7 @@ export function AccountMenu() {
                 <MdSchool className="text-xl" />
               </motion.div>
               <span className="text-xl font-bold bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent">
-                College Management System
+                Brainy Scholarnet College
               </span>
             </Link>
           </motion.div>

@@ -1,6 +1,6 @@
 # Admin Repository Documentation
 
-This interface provides administrative access to users, enrollments, courses, and departments in the College Management System.
+This interface provides administrative access to users, enrollments, courses, and departments in the Brainy Scholarnet College.
 
 ## Table of Contents
 - [User Methods](#user-methods)

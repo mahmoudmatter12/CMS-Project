@@ -39,7 +39,7 @@ export function Footer() {
           >
             <h3 className="text-2xl font-bold mb-4">
               <span className="bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent">
-                College Management System
+                Brainy Scholarnet College
               </span>
             </h3>
             <p className="text-gray-400 mb-6">
@@ -129,7 +129,7 @@ export function Footer() {
           transition={{ duration: 0.8 }}
           className="mt-16 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4"
         >
-          <p className="text-gray-500 text-sm">© {currentYear} College Management System. All rights reserved.</p>
+          <p className="text-gray-500 text-sm">© {currentYear} Brainy Scholarnet College. All rights reserved.</p>
         </motion.div>
       </div>
     </footer>
